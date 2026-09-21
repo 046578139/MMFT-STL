@@ -83,41 +83,66 @@ The preview images are rendered at a size where one pixel is roughly 0.2 mm
 of real part, so curves in them can look stepped when the model is not.
 `src/preview.py` supersamples to keep that under control.
 
-### The "FIREARMS TRAINING" line
+### The lettering
 
-Everything in the mark traces well except this one line, and for a reason
-the tracing cannot fix: in the source image it is only about **34 px** of
-cap height. There is no detail in the file to recover.
+Two runs in the mark are too small in the source to trace well, for a
+reason no amount of work on the tracer can fix. "FIREARMS TRAINING" is
+about **34 px** of cap height in the file, and the small caps of the
+wordmark about **47 px**. There is no detail there to recover.
 
-![before and after](docs/images/subtext_before_after.png)
+![sub-text, before and after](docs/images/subtext_before_after.png)
 
-*Traced from the raster, then the same line set from outlines.*
+![wordmark, before and after](docs/images/wordmark_before_after.png)
 
-So it is re-set from type instead. Matching the source against a range of
-candidates — normalising cap height, solving tracking to match the line's
-width, and scoring pixel overlap — puts the typeface squarely in the
-**Helvetica** family:
+*Each pair: traced from the raster, then set from type.*
 
-| Candidate | Overlap with the source |
-|---|---|
-| FreeSans Bold Oblique (Helvetica clone) | **0.872** |
-| Nimbus Sans Bold Italic (Helvetica clone) | 0.871 |
-| Arial metrics (Liberation Sans Bold Italic) | 0.800 |
-| Barlow Bold Italic | 0.609 |
+Both are re-set from outlines instead. Each run was matched the same way —
+normalise cap height, solve tracking to match the run's width, score pixel
+overlap against the source — then fitted to the box the traced run
+occupied, so everything lands where the artwork puts it.
 
-The two Helvetica clones tie and Arial is clearly behind, so the line is set
-in FreeSans Bold Oblique with 1.4 % tracking and 1.5° of extra slant — the
-values that matched — and dropped into the box the traced line occupied, so
-it lands exactly where the artwork puts it. Stroke weight comes out at
-1.08 mm median against the traced line's 1.05 mm, so the line reads at the
-same weight; only the edges change.
+**They are not the same typeface, and that turns out to be the point.**
+Stroke-to-cap comes out at 0.176 for the sub-text and 0.265 for the
+wordmark: the mark pairs a Bold with a Black. Setting both in one weight
+would have flattened that, so each is matched on its own.
 
-The wordmark above it is eight times larger in the same file and traces
-cleanly, so it is left alone.
+| Run | Candidate | Overlap |
+|---|---|---|
+| Sub-text | **FreeSans Bold Oblique** (Helvetica clone) | **0.871** |
+| | Nimbus Sans Bold Italic (Helvetica clone) | 0.870 |
+| | Arial metrics (Liberation Sans Bold Italic) | 0.791 |
+| Wordmark | **Archivo Black**, condensed 3 % | **0.895** |
+| | Archivo weight 900 | 0.870 |
+| | Asap weight 900 | 0.865 |
+| | any Bold weight | below 0.69 |
+
+The sub-text is Helvetica, near enough. The wordmark is a heavy grotesque
+that Archivo Black stands in for: every letter traces 4–7 % narrower than
+Archivo draws it, so the original is the narrower face of the two, and
+condensing Archivo by 3 % both improves the match and brings the tracking
+needed to fill the line back near zero, where the letters stop colliding.
+
+Weight is preserved in both — the sub-text comes out at 1.08 mm median
+stroke against the traced 1.05 mm. Only the edges change.
+
+**The two large M's are left as traced.** They are 177 px in the source,
+clean enough that setting them would gain nothing, and they are a drawn
+lockup rather than two letters set side by side — re-setting them would
+have broken the way they interlock.
 
 **If you have the original vector logo** (`.ai`, `.eps`, `.svg` or a vector
 `.pdf`), that would beat all of this — send it over and the whole mark can
 come from it rather than from a 720 px raster.
+
+### One thing the re-setting fixed
+
+The scope's crosshair shows through two gaps in "ND", and the artwork holds
+it off the letters with a thin white halo. Those two slivers — 0.21 and
+0.32 mm² — sit in the wordmark's band, so grouping by position had been
+filing them with the lettering. In the three-colour set that meant printing
+them red instead of with the rest of the optic. They are now grouped with
+the scope, and the re-set letters are cut back by the same 0.35 mm halo the
+artwork uses, so the crosshair still reads as passing in front of them.
 
 ### Regenerating
 

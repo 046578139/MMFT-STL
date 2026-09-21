@@ -119,16 +119,16 @@ def render(meshes, colours, path: Path, elev=28.0, azim=125.0, size=1000, margin
         print(f"  {path}")
 
 
-def subtext_comparison(path: Path, px_per_mm: float = 26.0) -> None:
-    """The sub-text as traced against the same line set from outlines."""
+def lettering_comparison(path: Path, group: str, px_per_mm: float = 26.0) -> None:
+    """One run of the mark as traced, against the same run set from type."""
     import sys
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     import logo as logo_mod
     from PIL import ImageDraw
 
     src = str(ROOT / "assets" / "mmft_logo.png")
-    traced = logo_mod.vectorise(src, 90.0, set_subtext=False)["subtext"]
-    reset = logo_mod.vectorise(src, 90.0, set_subtext=True)["subtext"]
+    traced = logo_mod.vectorise(src, 90.0, set_subtext=False, set_wordmark=False)[group]
+    reset = logo_mod.vectorise(src, 90.0)[group]
 
     x0, y0, x1, y1 = traced.bounds
     w = int((x1 - x0 + 2) * px_per_mm)
@@ -139,12 +139,11 @@ def subtext_comparison(path: Path, px_per_mm: float = 26.0) -> None:
     for i, geom in enumerate((traced, reset)):
         oy = i * (h + gap)
         for poly in geom.geoms:
-            pts = [((x - x0 + 1) * px_per_mm, (y1 - y + 1) * px_per_mm + oy)
-                   for x, y in poly.exterior.coords]
-            draw.polygon(pts, fill=(38, 38, 42))
+            xy = lambda pts: [((x - x0 + 1) * px_per_mm, (y1 - y + 1) * px_per_mm + oy)
+                              for x, y in pts]
+            draw.polygon(xy(poly.exterior.coords), fill=(38, 38, 42))
             for ring in poly.interiors:
-                draw.polygon([((x - x0 + 1) * px_per_mm, (y1 - y + 1) * px_per_mm + oy)
-                              for x, y in ring.coords], fill=(250, 250, 248))
+                draw.polygon(xy(ring.coords), fill=(250, 250, 248))
     path.parent.mkdir(parents=True, exist_ok=True)
     img.save(path)
     print(f"  {path.relative_to(ROOT)}")
@@ -175,7 +174,8 @@ def main() -> None:
         "MMFT", "raised/MMFT"))
     render([single], [BLACK], IMG / "1color_hero.png", elev=26, azim=-62)
 
-    subtext_comparison(IMG / "subtext_before_after.png")
+    lettering_comparison(IMG / "subtext_before_after.png", "subtext")
+    lettering_comparison(IMG / "wordmark_before_after.png", "wordmark", px_per_mm=15.0)
 
     # A close-up, so the edge quality of the mark is actually visible: at the
     # size of the other renders one pixel is about 0.2 mm of real part.

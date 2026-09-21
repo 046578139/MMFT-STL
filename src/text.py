@@ -1,18 +1,30 @@
 """Set a line of text as real outlines, for parts of the mark the raster
 cannot carry.
 
-"FIREARMS TRAINING" is only about 34 px of cap height in the source image,
-so tracing it inherits every bit of that resolution: edges that should be
-straight come out soft and the counters close up.  The wordmark above it is
-eight times larger in the same file and traces cleanly, so only this line
-needs re-setting.
+Two runs in the mark are too small in the source to trace well.
+"FIREARMS TRAINING" is about 34 px of cap height and the small caps of
+"MOUNTAIN MARYLAND" about 47 px, so both inherit that resolution: edges
+that should be straight come out soft and the counters close up.  The two
+large M's are 177 px and trace cleanly, and they are a drawn lockup rather
+than two letters set side by side, so they are left alone.
 
-Matching the source against a range of candidates -- normalising cap height,
-solving tracking to match the line's width, and scoring overlap -- puts the
-typeface in the Helvetica family: FreeSans Bold Oblique and Nimbus Sans Bold
-Italic score 0.872 and 0.871, while Arial's metrics (Liberation Sans Bold
-Italic) only reach 0.800.  FreeSans ships here because it is a faithful
-Helvetica clone and its licence allows redistribution.
+Each run was matched by normalising cap height, solving tracking to match
+the run's width, and scoring pixel overlap against the source.
+
+The sub-text lands in the Helvetica family -- FreeSans Bold Oblique 0.871
+and Nimbus Sans Bold Italic 0.870, against 0.791 for Arial's metrics
+(Liberation Sans Bold Italic).
+
+The wordmark is a different, much heavier face: its stroke-to-cap ratio is
+0.265 against the sub-text's 0.176, so the mark pairs a Bold with a Black.
+Archivo Black matches it at 0.885, ahead of Archivo at weight 900 (0.870)
+and Asap at 900 (0.865), and well ahead of any Bold.  Every letter of the
+wordmark traces 4-7 % narrower than Archivo Black draws it, so the original
+face is slightly the narrower of the two; condensing Archivo Black by 3 %
+takes the match to 0.895 and, more usefully, brings the tracking needed to
+fill the line back near zero, where the letters stop colliding.
+
+Both fonts ship here with their licences; both allow redistribution.
 """
 
 from __future__ import annotations
@@ -25,12 +37,17 @@ from fontTools.ttLib import TTFont
 from shapely.geometry import MultiPolygon, Polygon
 from shapely.ops import unary_union
 
-FONT = Path(__file__).resolve().parent.parent / "assets" / "fonts" / "FreeSansBoldOblique.ttf"
+FONTS = Path(__file__).resolve().parent.parent / "assets" / "fonts"
+FONT = FONTS / "FreeSansBoldOblique.ttf"
+WORDMARK_FONT = FONTS / "ArchivoBlack-Regular.ttf"
 
-# Settled by the match described above: a touch of extra slant on top of the
-# face's own oblique, and a little tracking to reach the line's width.
+# Settled by the matches described above.  The sub-text's face is already
+# oblique and needs only a touch more; Archivo Black is upright, so the
+# wordmark carries the mark's full slant.
 SLANT_DEG = -1.5
 TRACKING_EM = 0.0142
+WORDMARK_SLANT_DEG = 12.0
+WORDMARK_CONDENSE = 0.97
 
 
 class _PolygonPen(BasePen):
@@ -99,8 +116,12 @@ def _rings_to_polygons(rings: list[np.ndarray]) -> MultiPolygon:
 
 
 def set_line(text: str, font_path: Path = FONT, tracking_em: float = TRACKING_EM,
-             slant_deg: float = SLANT_DEG) -> MultiPolygon:
-    """Lay out ``text`` and return its outlines, in font units, y up."""
+             slant_deg: float = SLANT_DEG, condense: float = 1.0) -> MultiPolygon:
+    """Lay out ``text`` and return its outlines, in font units, y up.
+
+    ``condense`` squeezes the finished line horizontally, shapes and spacing
+    together, the way a photo-setter would.
+    """
     font = TTFont(font_path)
     glyph_set = font.getGlyphSet()
     cmap = font.getBestCmap()
@@ -122,7 +143,36 @@ def set_line(text: str, font_path: Path = FONT, tracking_em: float = TRACKING_EM
             rings.append(a)
         x += hmtx[name][0] + tracking_em * upem
 
+    if condense != 1.0:
+        for a in rings:
+            a[:, 0] *= condense
+
     return _rings_to_polygons(rings)
+
+
+def fit_line_to_box(text: str, bounds: tuple[float, float, float, float],
+                    font_path: Path = FONT, slant_deg: float = SLANT_DEG,
+                    condense: float = 1.0) -> MultiPolygon:
+    """Set ``text`` to exactly fill ``bounds``.
+
+    Tracking is solved rather than fixed: each run gets whatever spacing
+    makes it the right width for the box it has to fill, so a run keeps the
+    proportions the artwork gave it instead of being stretched into place.
+    """
+    tx0, ty0, tx1, ty1 = bounds
+    target = (tx1 - tx0) / (ty1 - ty0)
+
+    lo, hi = -0.25, 0.30
+    geom = None
+    for _ in range(40):
+        mid = (lo + hi) / 2
+        geom = set_line(text, font_path, mid, slant_deg, condense)
+        gx0, gy0, gx1, gy1 = geom.bounds
+        if (gx1 - gx0) / (gy1 - gy0) < target:
+            lo = mid
+        else:
+            hi = mid
+    return fit_to_box(geom, bounds)
 
 
 def fit_to_box(geom: MultiPolygon, bounds: tuple[float, float, float, float]) -> MultiPolygon:

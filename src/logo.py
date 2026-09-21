@@ -22,8 +22,17 @@ from skimage import measure
 
 import text as text_mod
 
-# The one line the source raster is too small to carry; see text.py.
+# The runs the source raster is too small to carry; see text.py.  The two
+# large M's are left as traced: they are big enough in the source, and they
+# are a drawn lockup rather than two letters set side by side.
 SUBTEXT_LINE = "FIREARMS TRAINING"
+WORDMARK_UPPER = "OUNTAIN"
+WORDMARK_LOWER = "ARYLAND"
+
+# The artwork holds the scope's ring and crosshair off the wordmark by a
+# thin white halo.  Re-set letters are cut back by the same amount so the
+# scope still reads as passing in front of them.
+KNOCKOUT_MM = 0.35
 
 # Semantic grouping of the logo's connected components.
 GROUPS = ("rifle", "scope", "wordmark", "rule", "subtext", "pistol")
@@ -122,6 +131,50 @@ def _contours_to_polygons(contours, to_mm) -> MultiPolygon:
     return merged if isinstance(merged, MultiPolygon) else MultiPolygon([merged])
 
 
+def _reset_wordmark(raw: dict) -> tuple[MultiPolygon, list]:
+    """Re-set the wordmark's two small-cap runs, keeping the M lockup.
+
+    Returns the rebuilt wordmark and any stray pieces that turned out not to
+    be lettering at all.
+    """
+    block = raw["wordmark"].bounds
+    height = block[3] - block[1]
+
+    kept, strays = [], []
+    runs: dict[str, list] = {"upper": [], "lower": []}
+    for poly in raw["wordmark"].geoms:
+        x0, y0, x1, y1 = poly.bounds
+        tall = (y1 - y0) / height
+        centre = ((y0 + y1) / 2 - block[1]) / height
+        if tall > 0.6:
+            kept.append(poly)                     # the two large M's
+        elif tall < 0.12:
+            strays.append(poly)                   # not a letter
+        else:
+            runs["upper" if centre > 0.5 else "lower"].append(poly)
+
+    # Everything the artwork draws in front of the lettering, plus the strays,
+    # which are part of the scope and so knock out of the letters too.
+    in_front = unary_union(
+        [raw[g] for g in ("scope", "rifle", "pistol") if g in raw] + strays
+    ).buffer(KNOCKOUT_MM)
+
+    rebuilt = list(kept)
+    for key, line in (("upper", WORDMARK_UPPER), ("lower", WORDMARK_LOWER)):
+        if not runs[key]:
+            continue
+        box = unary_union(runs[key]).bounds
+        geom = text_mod.fit_line_to_box(
+            line, box, text_mod.WORDMARK_FONT,
+            text_mod.WORDMARK_SLANT_DEG, text_mod.WORDMARK_CONDENSE,
+        )
+        rebuilt.append(geom.difference(in_front))
+
+    merged = unary_union(rebuilt)
+    return (merged if isinstance(merged, MultiPolygon) else MultiPolygon([merged]),
+            strays)
+
+
 def vectorise(
     path: str,
     width_mm: float,
@@ -129,6 +182,7 @@ def vectorise(
     bold_mm: float = 0.15,
     simplify_mm: float = 0.02,
     set_subtext: bool = True,
+    set_wordmark: bool = True,
 ) -> dict:
     """Return ``{group: MultiPolygon}`` in millimetres.
 
@@ -140,10 +194,11 @@ def vectorise(
     still; 0.15 mm per side lifts everything to a width a 0.4 mm nozzle can
     actually lay down, and is far too small to read as a change of weight.
 
-    ``set_subtext`` replaces the traced "FIREARMS TRAINING" with the same
-    line set from outlines.  That line is only about 34 px tall in the
-    source, too little to trace cleanly; everything else in the mark is
-    large enough that tracing beats any substitute.
+    ``set_subtext`` and ``set_wordmark`` replace the traced lettering with
+    the same runs set from outlines.  "FIREARMS TRAINING" is about 34 px of
+    cap height in the source and the wordmark's small caps about 47 px, too
+    little to trace cleanly either way.  The two large M's are 177 px and
+    are left as traced.
     """
     gray = _load_gray(path, px_per_mm, width_mm)
     H, W = gray.shape
@@ -179,12 +234,21 @@ def vectorise(
         contours = measure.find_contours(g, 0.5)
         raw[group] = _contours_to_polygons([c - 2 for c in contours], to_mm)
 
-    # Swap the traced sub-text for properly set outlines, dropped into the
-    # box the traced line occupied so it lands where the artwork puts it.
+    # Swap the traced lettering for properly set outlines, dropped into the
+    # boxes the traced runs occupied so they land where the artwork puts
+    # them.
     if set_subtext and "subtext" in raw:
-        raw["subtext"] = text_mod.fit_to_box(
-            text_mod.set_line(SUBTEXT_LINE), raw["subtext"].bounds
-        )
+        raw["subtext"] = text_mod.fit_line_to_box(SUBTEXT_LINE, raw["subtext"].bounds)
+
+    if set_wordmark and "wordmark" in raw:
+        raw["wordmark"], strays = _reset_wordmark(raw)
+        if strays and "scope" in raw:
+            # Slivers of the scope's crosshair, showing through the gaps in
+            # "ND", that land in the wordmark's band and get grouped with it.
+            # They belong to the scope, and in the three-colour set that is
+            # the difference between printing them red and printing them
+            # with the rest of the optic.
+            raw["scope"] = unary_union([raw["scope"], *strays])
 
     out: dict[str, MultiPolygon] = {}
     for group, polys in raw.items():
