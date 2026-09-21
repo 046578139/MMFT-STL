@@ -36,12 +36,28 @@ def camera(elev: float, azim: float) -> np.ndarray:
     return np.stack([right, up, fwd])
 
 
-def render(meshes, colours, path: Path, elev=28.0, azim=125.0, size=1000, margin=1.07):
+def render(meshes, colours, path: Path, elev=28.0, azim=125.0, size=1000, margin=1.07,
+           supersample=3, crop=None):
+    """Rasterise the meshes to ``path``.
+
+    Rendering at ``supersample`` times the final size and scaling back down
+    is what keeps edges from looking stepped; without it a render pixel is
+    about 0.2 mm of real part and every curve reads as a staircase that is
+    not in the geometry.
+
+    ``crop`` is an optional (cx, cy, cz, half_width) in model millimetres for
+    a close-up -- cz matters because the default centre sits halfway up the
+    blade, well above the plate the mark is on.
+    """
     R = camera(elev, azim)
+    size = size * supersample
     allv = np.vstack([m.vertices for m in meshes])
     centre = (allv.min(axis=0) + allv.max(axis=0)) / 2
     P = (allv - centre) @ R.T
     half = max(np.ptp(P[:, 0]), np.ptp(P[:, 1])) / 2 * margin
+    if crop is not None:
+        cx, cy, cz, half = crop
+        centre = np.array([cx, cy, cz], float)
     scale = size / (2 * half)
 
     img = np.empty((size, size, 3), np.float64)
@@ -93,15 +109,21 @@ def render(meshes, colours, path: Path, elev=28.0, azim=125.0, size=1000, margin
             img[y0:y1 + 1, x0:x1 + 1][hit] = np.clip(base * shade[ti], 0, 255)
 
     path.parent.mkdir(parents=True, exist_ok=True)
-    Image.fromarray(img.astype(np.uint8)).save(path)
-    print(f"  {path.relative_to(ROOT)}")
+    out = Image.fromarray(img.astype(np.uint8))
+    if supersample > 1:
+        out = out.resize((size // supersample, size // supersample), Image.LANCZOS)
+    out.save(path)
+    try:
+        print(f"  {path.relative_to(ROOT)}")
+    except ValueError:
+        print(f"  {path}")
 
 
 def main() -> None:
-    body = trimesh.load(STL / "MMFT_Stand_black_body.stl")
-    logo = trimesh.load(STL / "MMFT_Stand_red_logo_full.stl")
-    text = trimesh.load(STL / "MMFT_Stand_red_logo_text.stl")
-    art = trimesh.load(STL / "MMFT_Stand_light_logo_art.stl")
+    body = trimesh.load(STL / "raised" / "MMFT_Stand_black_body.stl")
+    logo = trimesh.load(STL / "raised" / "MMFT_Stand_red_logo_full.stl")
+    text = trimesh.load(STL / "raised" / "MMFT_Stand_red_logo_text.stl")
+    art = trimesh.load(STL / "raised" / "MMFT_Stand_light_logo_art.stl")
 
     # The mark reads left to right along +x and the viewer stands at -y,
     # so the useful angles all sit on the negative-y side of the model.
@@ -118,8 +140,22 @@ def main() -> None:
     render([body, text, art], [BLACK, RED, BONE], IMG / "3color_hero.png", elev=26, azim=-62)
     render([body, text, art], [BLACK, RED, BONE], IMG / "3color_top.png", elev=90, azim=-90)
 
-    single = trimesh.load(STL / "MMFT_Stand_one_piece.stl")
+    single = trimesh.load(STL / "MMFT_Stand_one_piece.stl".replace(
+        "MMFT", "raised/MMFT"))
     render([single], [BLACK], IMG / "1color_hero.png", elev=26, azim=-62)
+
+    # A close-up, so the edge quality of the mark is actually visible: at the
+    # size of the other renders one pixel is about 0.2 mm of real part.
+    render([body, logo], [BLACK, RED], IMG / "detail.png",
+           elev=90, azim=-90, supersample=4, crop=(60, 31, 10.4, 19))
+
+    # Raised against flush, lit from a low angle so the relief reads.
+    fbody = trimesh.load(STL / "flush" / "MMFT_Stand_black_body.stl")
+    flogo = trimesh.load(STL / "flush" / "MMFT_Stand_red_logo_full.stl")
+    render([body, logo], [BLACK, RED], IMG / "raised_detail.png",
+           elev=20, azim=-68, size=800, supersample=3, crop=(46, 33, 10.4, 21))
+    render([fbody, flogo], [BLACK, RED], IMG / "flush_detail.png",
+           elev=20, azim=-68, size=800, supersample=3, crop=(46, 33, 10.4, 21))
 
 
 if __name__ == "__main__":

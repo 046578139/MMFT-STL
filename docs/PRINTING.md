@@ -60,13 +60,42 @@ Nothing exotic. Start from your printer's stock PETG profile and change:
 The solid model is about 155 cm³; at the settings above expect somewhere
 around 90–110 g of filament. Your slicer will give you the real number.
 
+## Raised or flush
+
+Pick this first; it decides which folder you print from.
+
+**`stl/flush/` — the mark is let 0.8 mm into the plate, sitting level with
+it.** This is what to print for a shop counter. Nothing stands above the
+surface, so there is nothing for a muzzle or a slide to catch, and each
+piece of the mark is surrounded on all four sides by the black plate — to
+move one you would have to break the plate. It needs a multi-material
+printer: black and red occupy the same four layers.
+
+**`stl/raised/` — the mark stands 0.8 mm proud.** Print this if you have a
+single extruder, because it is the version that can be done with filament
+changes. Everything above the top of the plate is mark and nothing else.
+
+The reason the distinction matters is scale. Most of the mark is chunky —
+the rifle alone has a 300 mm² footprint. But the two small accent marks in
+the wordmark are under 0.75 mm², and raised they are 0.8 mm tall nubs held
+on by that much bonded area, loaded in peel if something catches their edge.
+Nothing about that is unusual for a raised logo, and plenty of parts live
+like that for years; it is simply a failure mode that the flush version does
+not have.
+
+The flush version costs more filament in purge — black and red change over
+inside every one of those four layers rather than twice for the whole print.
+Budget a few extra cubic centimetres of waste.
+
 ## Getting the mark in red
 
 ### Multi-material printer (AMS, MMU, Palette, IDEX)
 
-Load `MMFT_Stand_black_body.stl` and `MMFT_Stand_red_logo_full.stl` into one
-project, assign black and red, and slice. They share a coordinate space, so
-they land in the right place with no alignment step.
+Load `MMFT_Stand_black_body.stl` and `MMFT_Stand_red_logo_full.stl` from the
+folder you picked into one project, assign black and red, and slice. They
+share a coordinate space, so they land in the right place with no alignment
+step, and in the flush set the inlay fills its pocket exactly — no gap and
+no overlap.
 
 For three colours use `MMFT_Stand_black_body.stl`,
 `MMFT_Stand_red_logo_text.stl` and `MMFT_Stand_light_logo_art.stl`.
@@ -74,14 +103,18 @@ For three colours use `MMFT_Stand_black_body.stl`,
 Most of the filament a multi-material print wastes on this goes to purging
 between black and red, not into the part — the mark itself is only 1 cm³.
 Flushing into infill or into the object's own sparse regions cuts that down
-a lot.
+a lot. Do not cut the flush volume too far on the flush set: black bleeding
+into red shows up on the top surface, which is the surface you are looking
+at.
 
 ### Single-extruder printer
 
 This works because the mark stands proud of a flat plate, so everything
 above the top of the plate is mark and nothing else.
 
-1. Slice `MMFT_Stand_one_piece.stl`.
+Use the **`stl/raised/`** set for this.
+
+1. Slice `raised/MMFT_Stand_one_piece.stl`.
 2. Add a filament change at **Z = 10.0 mm** — the top of the plate.
 3. Add a second one at **Z = 10.8 mm** — the top of the mark.
 4. Load black, and swap to red and back when the printer pauses.
@@ -102,8 +135,14 @@ printer.
 
 ### One colour
 
-`MMFT_Stand_one_piece.stl` on its own. The mark still reads clearly as
-relief — it just isn't picked out in red.
+Two options, neither needing a filament change:
+
+* `raised/MMFT_Stand_one_piece.stl` — the mark standing proud of the plate.
+* `flush/MMFT_Stand_engraved_one_piece.stl` — the mark cut into the plate
+  instead. Nothing proud of the surface at all, so it is the most durable
+  thing here, but the thinnest strokes are about 0.4 mm and a 0.4 mm nozzle
+  will skip some of the finest detail in the scope and the pistol. The
+  lettering comes through cleanly.
 
 ## Before you print a batch
 

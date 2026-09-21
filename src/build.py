@@ -90,7 +90,8 @@ BLADE_TIP = [
 # --------------------------------------------------------------------------
 LOGO_SRC = ROOT / "assets" / "mmft_logo.png"
 LOGO_W = 90.0           # width of the mark on the plate
-LOGO_RELIEF = 0.8       # how far it stands proud -- 4 layers at 0.20 mm
+LOGO_RELIEF = 0.8       # how proud it stands, or how deep it is let in --
+                        # 4 layers at 0.20 mm either way
 LOGO_MARGIN_X = 8.0     # left edge of the mark
 LOGO_BOLD = 0.15        # per-side stroke growth, see logo.py
 
@@ -152,8 +153,13 @@ def build_blade() -> trimesh.Trimesh:
     return loft(sections)
 
 
-def build_logo() -> dict[str, trimesh.Trimesh]:
-    """Extrude each part of the mark, sitting on the top of the plate."""
+def build_logo(z0: float) -> dict[str, trimesh.Trimesh]:
+    """Extrude each part of the mark as a solid whose base sits at ``z0``.
+
+    At ``z0 = BASE_H`` the solids stand on the plate; at
+    ``z0 = BASE_H - LOGO_RELIEF`` they occupy the top of it instead, which is
+    what the flush set subtracts to make its pockets.
+    """
     groups = logo_mod.vectorise(str(LOGO_SRC), LOGO_W, bold_mm=LOGO_BOLD)
 
     whole = unary_union(list(groups.values()))
@@ -162,7 +168,7 @@ def build_logo() -> dict[str, trimesh.Trimesh]:
     dy = (BASE_W - (maxy - miny)) / 2.0 - miny
 
     return {
-        name: extrude(translate(geom, dx, dy), BASE_H, LOGO_RELIEF)
+        name: extrude(translate(geom, dx, dy), z0, LOGO_RELIEF)
         for name, geom in groups.items()
     }
 
@@ -175,35 +181,55 @@ def report(name: str, mesh: trimesh.Trimesh) -> None:
     )
 
 
-def main() -> None:
-    OUT.mkdir(exist_ok=True)
-
-    print("building body ...")
-    body = union([build_base(), build_blade()])
-
-    print("building logo ...")
-    parts = build_logo()
+def split(parts: dict[str, trimesh.Trimesh]):
+    """Group the mark's parts into the lettering, the firearms, and both."""
     text = union([parts[g] for g in logo_mod.TEXT_GROUPS if g in parts])
     art = union([parts[g] for g in logo_mod.ART_GROUPS if g in parts])
-    full = union([text, art])
+    return text, art, union([text, art])
+
+
+def main() -> None:
+    body = union([build_base(), build_blade()])
+
+    # Raised: the mark stands on the plate.  Every layer above the plate is
+    # mark and nothing else, which is what lets a single extruder do this in
+    # two colours with a pair of filament changes.
+    print("raised set ...")
+    raised = build_logo(BASE_H)
+    r_text, r_art, r_full = split(raised)
+    files = {
+        "raised/MMFT_Stand_black_body.stl": body,
+        "raised/MMFT_Stand_red_logo_full.stl": r_full,
+        "raised/MMFT_Stand_red_logo_text.stl": r_text,
+        "raised/MMFT_Stand_light_logo_art.stl": r_art,
+        "raised/MMFT_Stand_one_piece.stl": union([body, r_full]),
+    }
+
+    # Flush: the mark is let into the plate instead, so nothing stands proud
+    # to be caught or chipped and each piece is boxed in on all four sides by
+    # the black around it.  Needs a multi-material printer -- black and red
+    # share the same four layers.
+    print("flush set ...")
+    flush = build_logo(BASE_H - LOGO_RELIEF)
+    f_text, f_art, f_full = split(flush)
+    pocketed = trimesh.boolean.difference([body, f_full], engine="manifold")
+    files.update({
+        "flush/MMFT_Stand_black_body.stl": pocketed,
+        "flush/MMFT_Stand_red_logo_full.stl": f_full,
+        "flush/MMFT_Stand_red_logo_text.stl": f_text,
+        "flush/MMFT_Stand_light_logo_art.stl": f_art,
+        # The pockets left empty: one colour, engraved, nothing to knock off.
+        "flush/MMFT_Stand_engraved_one_piece.stl": pocketed,
+    })
 
     print("writing ...")
-    files = {
-        # Black stand.  Shared by the two- and three-colour sets.
-        "MMFT_Stand_black_body.stl": body,
-        # Two colours: the whole mark in red.
-        "MMFT_Stand_red_logo_full.stl": full,
-        # Three colours: lettering red, the firearms in a light colour.
-        "MMFT_Stand_red_logo_text.stl": text,
-        "MMFT_Stand_light_logo_art.stl": art,
-        # One colour: everything fused into a single solid.
-        "MMFT_Stand_one_piece.stl": union([body, full]),
-    }
     for fname, mesh in files.items():
-        mesh.export(OUT / fname)
+        path = OUT / fname
+        path.parent.mkdir(parents=True, exist_ok=True)
+        mesh.export(path)
         report(fname, mesh)
 
-    bounds = files["MMFT_Stand_one_piece.stl"].bounds
+    bounds = files["raised/MMFT_Stand_one_piece.stl"].bounds
     size = bounds[1] - bounds[0]
     print(f"\n  overall {size[0]:.2f} x {size[1]:.2f} x {size[2]:.2f} mm")
 

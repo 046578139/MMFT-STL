@@ -18,25 +18,70 @@ in front of it. Designed to print in a black body with the mark in red.
 **160 × 70 × 71 mm.** Fits any bed from 180 mm up. No supports, no bridging,
 flat on the plate.
 
+### Raised or flush
+
+The mark comes two ways. Both look the same from straight on; they differ
+in whether it stands on the plate or is let into it.
+
+| ![raised](docs/images/raised_detail.png) | ![flush](docs/images/flush_detail.png) |
+|---|---|
+| **`stl/raised/`** — stands 0.8 mm proud | **`stl/flush/`** — let 0.8 mm into the plate |
+
+**Flush is the one to print for a shop counter.** Nothing stands above the
+surface to be caught or chipped, and every piece of the mark is boxed in on
+all four sides by the black around it — a muzzle dragged across it just
+slides. It needs a multi-material printer, because black and red share the
+same four layers.
+
+**Raised** is there because it prints in two colours on *any* printer. Every
+layer above the plate is mark and nothing else, so a single extruder only
+needs a filament change at Z = 10.0 mm and another at Z = 10.8 mm. The
+trade-off is that a few pieces are small: the two accent marks in the
+wordmark have a footprint under 0.75 mm², which is not much holding a 0.8 mm
+tall nub. Most of the mark is far sturdier than that, but those are the
+pieces that would go first.
+
 ### Files
 
-| File | Colour | Used by |
+| File | Colour | Set |
 |---|---|---|
-| `stl/MMFT_Stand_black_body.stl` | black | 2- and 3-colour sets |
-| `stl/MMFT_Stand_red_logo_full.stl` | red | 2-colour set |
-| `stl/MMFT_Stand_red_logo_text.stl` | red | 3-colour set |
-| `stl/MMFT_Stand_light_logo_art.stl` | bone / silver / white | 3-colour set |
-| `stl/MMFT_Stand_one_piece.stl` | any single colour | on its own |
+| `raised/MMFT_Stand_black_body.stl` | black | 2- and 3-colour |
+| `raised/MMFT_Stand_red_logo_full.stl` | red | 2-colour |
+| `raised/MMFT_Stand_red_logo_text.stl` | red | 3-colour |
+| `raised/MMFT_Stand_light_logo_art.stl` | bone / silver / white | 3-colour |
+| `raised/MMFT_Stand_one_piece.stl` | any single colour | on its own |
+| `flush/MMFT_Stand_black_body.stl` | black | 2- and 3-colour |
+| `flush/MMFT_Stand_red_logo_full.stl` | red | 2-colour |
+| `flush/MMFT_Stand_red_logo_text.stl` | red | 3-colour |
+| `flush/MMFT_Stand_light_logo_art.stl` | bone / silver / white | 3-colour |
+| `flush/MMFT_Stand_engraved_one_piece.stl` | any single colour | on its own |
 
 Every part is modelled in the same coordinate space, so a multi-material
 slicer only needs them loaded together and assigned colours — there is
-nothing to line up by hand.
+nothing to line up by hand. The flush body and its inlay reassemble into the
+solid plate to within a hundred-thousandth of a cubic millimetre, with no
+overlap for a slicer to argue with.
 
-**Printing it in two colours on a single-extruder printer** works too,
-because the mark stands 0.8 mm proud of an otherwise flat plate: slice
-`MMFT_Stand_one_piece.stl`, add a filament change at **Z = 10.0 mm** and
-another at **Z = 10.8 mm**, and the four layers in between come out red.
+`flush/MMFT_Stand_engraved_one_piece.stl` is the flush plate with its
+pockets left empty — one colour, nothing proud of the surface at all. The
+thinnest strokes are around 0.4 mm, so a 0.4 mm nozzle will skip some of the
+finest detail in the scope and the pistol; the lettering comes through
+cleanly.
+
 See [docs/PRINTING.md](docs/PRINTING.md) for settings and filament choice.
+
+### How crisp is the mark?
+
+It is traced as vector outlines, not stamped from pixels — straight edges
+come out exactly straight (the rule under the wordmark is two points across
+46 mm) and the scope ring is round to 0.026 mm RMS, about a fifteenth of an
+extrusion width. Nothing in the geometry is stepped.
+
+![detail](docs/images/detail.png)
+
+The preview images are rendered at a size where one pixel is roughly 0.2 mm
+of real part, so curves in them can look stepped when the model is not.
+`src/preview.py` supersamples to keep that under control.
 
 ### Regenerating
 
