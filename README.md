@@ -72,6 +72,11 @@ Orca convention where each part names the filament slot it wants. If your
 slicer understands neither, you still get the geometry and the separate
 parts, and assigning the filaments by hand is a couple of clicks.
 
+Bambu Studio greets any non-Bambu 3MF with *"The 3mf file has invalid
+config, load geometry data only"*. That is about the print profile, not the
+model, and these files carry no print profile on purpose — see
+[docs/PRINTING.md](docs/PRINTING.md).
+
 ### STL files
 
 Still here for anything that will not take a 3MF, and for single-colour

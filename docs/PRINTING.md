@@ -35,6 +35,36 @@ drive the mark with the 0.2 mm and the rest of the part with a 0.4 mm. I
 have not verified that this particular combination is supported — confirm it
 in Bambu Studio before planning a batch around it.
 
+### "The 3mf file has invalid config, load geometry data only"
+
+Bambu Studio says this when you open one of these files. **It is expected,
+and nothing is wrong.**
+
+The message is about the *print profile* -- printer, nozzle, filament
+settings -- not about the model. Bambu Studio shows it for any 3MF that is
+not one of its own project files, which includes files out of Fusion,
+Onshape, SolidWorks and everything else. These files deliberately carry no
+print profile: guessing your printer and filament settings and quietly
+overwriting your own would be worse than the notice.
+
+Click OK. The geometry, the parts and their filament assignments all load.
+
+**Worth a glance once you have:** the object list should show *MMFT Pistol
+Stand* with two parts under it (or three, for the three-colour file), each
+with its own filament number. If it does, everything came through and you
+can slice.
+
+If the filament numbers did not come through, it is two clicks -- right-click
+each part and set its filament -- or load the matching `stl/` pair and assign
+them there. The parts are in the same coordinate space either way, so
+nothing needs lining up.
+
+For the record, the packages are built to the specification: the reference
+3MF library reads them with zero warnings, and the per-part filament slots
+are written the way Bambu Studio's own importer expects (`<part>` matched to
+its sub-object id, `subtype="normal_part"`, filament under a `<metadata
+key="extruder">`).
+
 ## Which filament
 
 For a stand that lives on a shop counter and has guns lifted off and dropped
