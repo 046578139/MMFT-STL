@@ -32,10 +32,15 @@ from shapely.ops import unary_union
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import logo as logo_mod
+import threemf
 from geometry import extrude, loft, rounded_rect, union
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "stl"
+OUT_3MF = ROOT / "3mf"
+
+# Colours the parts are tagged with, and the filament slot each asks for.
+BLACK, RED, BONE = "#28282C", "#C41C20", "#E2E2DE"
 
 # --------------------------------------------------------------------------
 # Base plate
@@ -222,12 +227,36 @@ def main() -> None:
         "flush/MMFT_Stand_engraved_one_piece.stl": pocketed,
     })
 
-    print("writing ...")
+    print("writing stl ...")
     for fname, mesh in files.items():
         path = OUT / fname
         path.parent.mkdir(parents=True, exist_ok=True)
         mesh.export(path)
         report(fname, mesh)
+
+    # The same models as 3MF projects: one file each, parts held together and
+    # already tagged with their colours.  STL can carry none of that.
+    print("writing 3mf ...")
+    projects = {
+        "MMFT_Stand_flush_2color.3mf": [
+            ("Stand body", pocketed, BLACK, 1),
+            ("Logo", f_full, RED, 2)],
+        "MMFT_Stand_flush_3color.3mf": [
+            ("Stand body", pocketed, BLACK, 1),
+            ("Lettering", f_text, RED, 2),
+            ("Firearms", f_art, BONE, 3)],
+        "MMFT_Stand_raised_2color.3mf": [
+            ("Stand body", body, BLACK, 1),
+            ("Logo", r_full, RED, 2)],
+        "MMFT_Stand_raised_3color.3mf": [
+            ("Stand body", body, BLACK, 1),
+            ("Lettering", r_text, RED, 2),
+            ("Firearms", r_art, BONE, 3)],
+    }
+    for fname, parts in projects.items():
+        threemf.write(OUT_3MF / fname, parts, "MMFT Pistol Stand")
+        size = (OUT_3MF / fname).stat().st_size
+        print(f"  {fname:<34} {len(parts)} parts  {size / 1e6:>5.2f} MB")
 
     bounds = files["raised/MMFT_Stand_one_piece.stl"].bounds
     size = bounds[1] - bounds[0]

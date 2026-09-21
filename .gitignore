@@ -2,6 +2,9 @@ __pycache__/
 *.py[cod]
 .venv/
 venv/
+.DS_Store
+
+# Slicer output and saved projects, but not the 3MF models this repo ships.
 *.gcode
 *.3mf
-.DS_Store
+!3mf/*.3mf

@@ -2,7 +2,13 @@
 
 ## On a Bambu Lab H2C
 
-Print the **`stl/flush/`** set in **Bambu PETG HF**, Black and Red.
+Open **`3mf/MMFT_Stand_flush_2color.3mf`** and print it in **Bambu PETG HF**,
+Black and Red.
+
+That one file holds both parts, already positioned and already tagged with
+the filament slot each wants, so there is nothing to import twice or line up
+by hand. The `stl/flush/` set is the same model if you would rather load the
+parts yourself.
 
 The H2C's Vortek system gives each material its own hotend and changes
 between them without purging, so the argument that usually counts against a

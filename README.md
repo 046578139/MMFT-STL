@@ -41,7 +41,41 @@ wordmark have a footprint under 0.75 mm², which is not much holding a 0.8 mm
 tall nub. Most of the mark is far sturdier than that, but those are the
 pieces that would go first.
 
-### Files
+### One file, or several
+
+**`3mf/` holds the whole model as a single file per variant** — parts kept
+together, colours already set, nothing to line up. Open one and print:
+
+| File | Parts |
+|---|---|
+| `3mf/MMFT_Stand_flush_2color.3mf` | black body + red mark |
+| `3mf/MMFT_Stand_flush_3color.3mf` | black body + red lettering + bone firearms |
+| `3mf/MMFT_Stand_raised_2color.3mf` | black body + red mark |
+| `3mf/MMFT_Stand_raised_3color.3mf` | black body + red lettering + bone firearms |
+
+**This cannot be done as an STL.** An STL file is a bare list of triangles
+with no notion of colour, material, or even where one body ends and the next
+begins — so a two-colour model has to travel as two STLs and be lined up
+again at the other end. 3MF is the format that fixes exactly that, and every
+current slicer reads it. As a bonus the whole two-colour project is 0.65 MB
+against 3.4 MB for the equivalent pair of STLs.
+
+Inside, the parts are written as *components of one object* rather than as
+separate objects side by side. That matters: as separate objects a slicer is
+free to move them independently, and a single auto-arrange would slide the
+mark off the plate it belongs to. As components they move together and
+cannot come apart.
+
+Colours are carried twice — `<basematerials>`, which is the core 3MF way any
+slicer reads, and `Metadata/model_settings.config`, the Bambu Studio and
+Orca convention where each part names the filament slot it wants. If your
+slicer understands neither, you still get the geometry and the separate
+parts, and assigning the filaments by hand is a couple of clicks.
+
+### STL files
+
+Still here for anything that will not take a 3MF, and for single-colour
+prints where one body is all you need.
 
 | File | Colour | Set |
 |---|---|---|
