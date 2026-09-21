@@ -83,6 +83,42 @@ The preview images are rendered at a size where one pixel is roughly 0.2 mm
 of real part, so curves in them can look stepped when the model is not.
 `src/preview.py` supersamples to keep that under control.
 
+### The "FIREARMS TRAINING" line
+
+Everything in the mark traces well except this one line, and for a reason
+the tracing cannot fix: in the source image it is only about **34 px** of
+cap height. There is no detail in the file to recover.
+
+![before and after](docs/images/subtext_before_after.png)
+
+*Traced from the raster, then the same line set from outlines.*
+
+So it is re-set from type instead. Matching the source against a range of
+candidates — normalising cap height, solving tracking to match the line's
+width, and scoring pixel overlap — puts the typeface squarely in the
+**Helvetica** family:
+
+| Candidate | Overlap with the source |
+|---|---|
+| FreeSans Bold Oblique (Helvetica clone) | **0.872** |
+| Nimbus Sans Bold Italic (Helvetica clone) | 0.871 |
+| Arial metrics (Liberation Sans Bold Italic) | 0.800 |
+| Barlow Bold Italic | 0.609 |
+
+The two Helvetica clones tie and Arial is clearly behind, so the line is set
+in FreeSans Bold Oblique with 1.4 % tracking and 1.5° of extra slant — the
+values that matched — and dropped into the box the traced line occupied, so
+it lands exactly where the artwork puts it. Stroke weight comes out at
+1.08 mm median against the traced line's 1.05 mm, so the line reads at the
+same weight; only the edges change.
+
+The wordmark above it is eight times larger in the same file and traces
+cleanly, so it is left alone.
+
+**If you have the original vector logo** (`.ai`, `.eps`, `.svg` or a vector
+`.pdf`), that would beat all of this — send it over and the whole mark can
+come from it rather than from a 720 px raster.
+
 ### Regenerating
 
 The models are generated, not hand-modelled — every dimension is a named

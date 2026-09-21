@@ -1,5 +1,34 @@
 # Printing the stand
 
+## On a Bambu Lab H2C
+
+Print the **`stl/flush/`** set in **Bambu PETG HF**, Black and Red.
+
+The H2C's Vortek system gives each material its own hotend and changes
+between them without purging, so the argument that usually counts against a
+flush inlay — black and red swapping over inside every one of its four
+layers — costs you almost nothing here. On a single-hotend machine that
+waste is the reason to consider the raised set instead. On this one there is
+no reason not to take the more durable version.
+
+PETG HF suits it on the merits too: it is the tough, heat-tolerant choice
+argued for below, it is tuned for high-speed printing, and its matte finish
+hides layer lines in a way that flatters a display piece. It is RFID-tagged
+so the AMS 2 Pro picks up its settings, and since PETG wants drying before
+use, run it in the AMS for a few hours first — the 2 Pro is heated for
+exactly this.
+
+For the three-colour set, take the light colour from the same PETG HF range
+(white or a light grey) so all three behave identically on the plate.
+
+One thing worth trying: the thinnest features in the mark are 0.42 mm
+against a 0.4 mm nozzle, which works but with nothing to spare. The H2C
+ships with a 0.2 mm hotend, so if the finest detail in the scope and the
+pistol matters to you, it is worth checking whether your slicer will let you
+drive the mark with the 0.2 mm and the rest of the part with a 0.4 mm. I
+have not verified that this particular combination is supported — confirm it
+in Bambu Studio before planning a batch around it.
+
 ## Which filament
 
 For a stand that lives on a shop counter and has guns lifted off and dropped
@@ -85,7 +114,8 @@ not have.
 
 The flush version costs more filament in purge — black and red change over
 inside every one of those four layers rather than twice for the whole print.
-Budget a few extra cubic centimetres of waste.
+Budget a few extra cubic centimetres of waste. This does not apply to a
+printer that swaps hotends rather than purging, such as the H2C.
 
 ## Getting the mark in red
 

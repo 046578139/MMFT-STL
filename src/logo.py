@@ -20,6 +20,11 @@ from shapely.geometry import MultiPolygon, Polygon
 from shapely.ops import unary_union
 from skimage import measure
 
+import text as text_mod
+
+# The one line the source raster is too small to carry; see text.py.
+SUBTEXT_LINE = "FIREARMS TRAINING"
+
 # Semantic grouping of the logo's connected components.
 GROUPS = ("rifle", "scope", "wordmark", "rule", "subtext", "pistol")
 
@@ -123,6 +128,7 @@ def vectorise(
     px_per_mm: float = 24.0,
     bold_mm: float = 0.15,
     simplify_mm: float = 0.02,
+    set_subtext: bool = True,
 ) -> dict:
     """Return ``{group: MultiPolygon}`` in millimetres.
 
@@ -133,6 +139,11 @@ def vectorise(
     the scope ring is about 0.42 mm and parts of the pistol are thinner
     still; 0.15 mm per side lifts everything to a width a 0.4 mm nozzle can
     actually lay down, and is far too small to read as a change of weight.
+
+    ``set_subtext`` replaces the traced "FIREARMS TRAINING" with the same
+    line set from outlines.  That line is only about 34 px tall in the
+    source, too little to trace cleanly; everything else in the mark is
+    large enough that tracing beats any substitute.
     """
     gray = _load_gray(path, px_per_mm, width_mm)
     H, W = gray.shape
@@ -152,7 +163,7 @@ def vectorise(
         xy[:, 1] = (H - 1 - contour[:, 0]) / px_per_mm
         return xy
 
-    out: dict[str, MultiPolygon] = {}
+    raw: dict[str, MultiPolygon] = {}
     for group, lab_ids in buckets.items():
         if not lab_ids:
             continue
@@ -166,9 +177,17 @@ def vectorise(
         g = np.where(near, gray, 1.0)
         g = np.pad(g, 2, constant_values=1.0)
         contours = measure.find_contours(g, 0.5)
-        polys = _contours_to_polygons(
-            [c - 2 for c in contours], to_mm
+        raw[group] = _contours_to_polygons([c - 2 for c in contours], to_mm)
+
+    # Swap the traced sub-text for properly set outlines, dropped into the
+    # box the traced line occupied so it lands where the artwork puts it.
+    if set_subtext and "subtext" in raw:
+        raw["subtext"] = text_mod.fit_to_box(
+            text_mod.set_line(SUBTEXT_LINE), raw["subtext"].bounds
         )
+
+    out: dict[str, MultiPolygon] = {}
+    for group, polys in raw.items():
         if simplify_mm:
             polys = polys.simplify(simplify_mm, preserve_topology=True)
         if bold_mm:
