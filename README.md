@@ -224,8 +224,15 @@ scratch in `src/` — no part of the original mesh is redistributed here.
 
 ### Sizing it to a different pistol
 
-The blade is what sets the fit. `BLADE_HX`, `BLADE_HY` and `BLADE_R` in
-`src/build.py` are the half-width, half-depth and corner radius of its
-constant section; `BLADE_RISE` is how far it stands above the plate and
-`BLADE_LEAN` is how far it moves in x per mm of height. Print the blade on
-its own first and check it before committing to a full plate.
+The post stands in for a magazine — it is drawn to the section of one, which
+is why it fits a Glock and not a single-stack 1911 or a 2011. Everything
+else about the stand is independent of the platform, so a variant is just a
+different post on the same base.
+
+`BLADE_NOMINAL_W` and `BLADE_NOMINAL_D` in `src/build.py` are the section as
+the magazine well sees it, and `BLADE_RISE` is how far the post stands above
+the plate. Change those three and rebuild.
+
+To find out what they should be for a given pistol, print the fit gauge in
+`stl/gauge/` — twelve labelled stubs spanning the likely range — and try
+them in the real thing. See [docs/FITTING.md](docs/FITTING.md).

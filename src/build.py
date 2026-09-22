@@ -55,14 +55,21 @@ BASE_BOTTOM_CHAMFER = 0.6   # keeps elephant's foot off the parting line
 # --------------------------------------------------------------------------
 # Magazine-well blade -- carried over from the stand being replaced
 # --------------------------------------------------------------------------
-BLADE_HX = 16.835       # half of 33.67
-BLADE_HY = 11.4185      # half of 22.837
+# The post is sheared, not tilted, so its horizontal section is wider than
+# the one the magazine well actually sees.  Quote the nominal (perpendicular)
+# section -- the number you would measure on a magazine or read off the fit
+# gauge -- and let the shear correction fall out of it.
+BLADE_NOMINAL_W = 33.06     # front-to-back, matches a measured G17 mag (33.1)
+BLADE_NOMINAL_D = 22.837    # side-to-side
 BLADE_R = 6.5           # section corner radius
 BLADE_RISE = 61.14      # height above the plate
 BLADE_LEAN = -0.19240   # dx per dz -- 10.89 degrees, leaning over the plate
 BLADE_ROOT_FILLET = 4.0
 BLADE_CX = 180.0        # section centre where it meets the plate
 BLADE_CY = BASE_W / 2
+
+BLADE_HX = BLADE_NOMINAL_W / 2 / np.cos(np.arctan(abs(BLADE_LEAN)))
+BLADE_HY = BLADE_NOMINAL_D / 2
 
 # Tip profile, measured off the original at 0.2 mm steps:
 # (depth below the tip, half-width in x, half-width in y).
