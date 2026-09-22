@@ -98,7 +98,7 @@ part.
 
 | Filament | When it makes sense | Watch out for |
 |---|---|---|
-| **ASA** | The display sits in direct sun. Best heat and UV resistance of the practical options. | Needs an enclosure; a 160 × 70 mm flat plate will lift at the corners without one. |
+| **ASA** | The display sits in direct sun. Best heat and UV resistance of the practical options. | Needs an enclosure; a 215 × 98 mm flat plate will lift at the corners without one. |
 | **PCTG** | A tougher PETG, if your supplier carries it. Prints much the same. | Less widely stocked. |
 | **PLA+ / Tough PLA** | Climate-controlled room, out of the sun, and you want the crispest possible lettering. | Still softens at ~60 °C. Plain PLA is too brittle here — if you go this route use an impact-modified one. |
 | **ABS** | Only if it is what you already run in an enclosure. | Worse UV resistance than ASA, and the fumes. |
@@ -112,7 +112,9 @@ Nothing exotic. Start from your printer's stock PETG profile and change:
 
 | Setting | Value | Why |
 |---|---|---|
-| Layer height | **0.20 mm** | The mark is 0.8 mm tall — exactly four layers. |
+| Nozzle | **0.4 mm** | See below — a 0.6 mm nozzle cannot render this mark. |
+| Layer height | **0.20 mm** | Plate, pocket floor and inlay all land exactly on layer boundaries. 0.30, 0.15 and 0.12 mm do too. |
+| Seam position | **Scarf joint** | Otherwise the seams stack into a visible line up one face of the post. |
 | Walls / perimeters | **4** | The blade carries its load in the walls, not the infill. |
 | Infill | **30 %**, gyroid or grid | Also adds useful weight to the base. |
 | Top layers | **5** | The mark sits on this surface; it needs to be flat and solid. |
@@ -122,8 +124,45 @@ Nothing exotic. Start from your printer's stock PETG profile and change:
 | Supports | **None** | Nothing overhangs. The blade leans 10.9°, well inside what prints unsupported. |
 | Orientation | As exported, flat on the plate | Puts the layer lines where they do the most good. |
 
-The solid model is about 155 cm³; at the settings above expect somewhere
-around 90–110 g of filament. Your slicer will give you the real number.
+The solid model is about 246 cm³; at the settings above expect somewhere
+around 140–170 g of filament. Your slicer will give you the real number.
+
+### Why a 0.4 mm nozzle, and not 0.6
+
+Not because the strokes are thin — at this size the thinnest is 0.48 mm. It
+is the **gaps**. Between the letters, and between the lettering and the
+firearms, the plate colour has to be laid down in a narrow channel, and a
+nozzle cannot lay a bead narrower than itself. Where the channel is too
+narrow the slicer puts nothing there at all, and you get an empty trench
+instead of a clean edge.
+
+At 0.4 mm there is now nothing in the mark it cannot fill. At 0.6 mm five
+channels are still too narrow, mostly around the sub-text — printable, but
+expect those few to close up.
+
+An earlier version of this model made the problem far worse. Every stroke
+was grown 0.15 mm per side so that the finest details would survive, which
+worked, but growing strokes narrows the gaps between them by the same
+amount: it left 21 channels a 0.4 mm nozzle could not fill, and 29 for a
+0.6 mm. Scaling the mark up and cutting that growth to 0.05 mm fixed both
+ends at once.
+
+| | thinnest stroke | gaps a 0.4 mm nozzle can't fill | gaps a 0.6 mm can't fill |
+|---|---|---|---|
+| Old: 90 mm mark, 0.15 mm growth | 0.57 mm | 21 | 29 |
+| **Now: 145 mm mark, 0.05 mm growth** | **0.48 mm** | **0** | **5** |
+
+### The line up one side of the post
+
+That is the seam, not the model — every perimeter loop has to start and stop
+somewhere, and by default Bambu Studio stacks them all at the same angle so
+they form a line. Set **Seam position** to **Scarf joint** and it all but
+disappears. There is only ever one seam per loop, which is why the far side
+is smooth.
+
+The ridge over the *top* of the post is a different thing and is meant to be
+there: it is the chisel-shaped lead-in, carried over from the stand this one
+replaces.
 
 ## Raised or flush
 

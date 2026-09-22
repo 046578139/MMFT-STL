@@ -45,10 +45,10 @@ BLACK, RED, BONE = "#28282C", "#C41C20", "#E2E2DE"
 # --------------------------------------------------------------------------
 # Base plate
 # --------------------------------------------------------------------------
-BASE_L = 160.0          # x
-BASE_W = 70.0           # y
-BASE_H = 10.0           # z -- a whole number of 0.20/0.25 mm layers
-BASE_CORNER_R = 6.0     # plan-view corner radius
+BASE_L = 215.0          # x
+BASE_W = 98.0           # y
+BASE_H = 9.6            # z -- divides exactly by 0.12/0.15/0.2/0.24/0.3 mm
+BASE_CORNER_R = 8.0     # plan-view corner radius
 BASE_TOP_ROUND = 2.0    # round-over along the top edge
 BASE_BOTTOM_CHAMFER = 0.6   # keeps elephant's foot off the parting line
 
@@ -61,7 +61,7 @@ BLADE_R = 6.5           # section corner radius
 BLADE_RISE = 61.14      # height above the plate
 BLADE_LEAN = -0.19240   # dx per dz -- 10.89 degrees, leaning over the plate
 BLADE_ROOT_FILLET = 4.0
-BLADE_CX = 125.0        # section centre where it meets the plate
+BLADE_CX = 180.0        # section centre where it meets the plate
 BLADE_CY = BASE_W / 2
 
 # Tip profile, measured off the original at 0.2 mm steps:
@@ -94,11 +94,11 @@ BLADE_TIP = [
 # Logo
 # --------------------------------------------------------------------------
 LOGO_SRC = ROOT / "assets" / "mmft_logo.png"
-LOGO_W = 90.0           # width of the mark on the plate
-LOGO_RELIEF = 0.8       # how proud it stands, or how deep it is let in --
-                        # 4 layers at 0.20 mm either way
+LOGO_W = 145.0          # width of the mark on the plate
+LOGO_RELIEF = 0.6       # how proud it stands, or how deep it is let in --
+                        # 3 layers at 0.20 mm, 2 at 0.30 mm, 4 at 0.15 mm
 LOGO_MARGIN_X = 8.0     # left edge of the mark
-LOGO_BOLD = 0.15        # per-side stroke growth, see logo.py
+LOGO_BOLD = 0.05        # per-side stroke growth, see logo.py
 
 N_BASE = 400            # perimeter samples for the plate
 N_BLADE = 256           # perimeter samples for the blade

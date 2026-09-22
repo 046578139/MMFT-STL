@@ -31,8 +31,10 @@ WORDMARK_LOWER = "ARYLAND"
 
 # The artwork holds the scope's ring and crosshair off the wordmark by a
 # thin white halo.  Re-set letters are cut back by the same amount so the
-# scope still reads as passing in front of them.
-KNOCKOUT_MM = 0.35
+# scope still reads as passing in front of them.  Measured at 0.35 mm on a
+# 90 mm-wide mark, and kept as a fraction so it scales with the mark rather
+# than staying put while everything around it grows.
+KNOCKOUT_FRAC = 0.35 / 90.0
 
 # Semantic grouping of the logo's connected components.
 GROUPS = ("rifle", "scope", "wordmark", "rule", "subtext", "pistol")
@@ -131,7 +133,7 @@ def _contours_to_polygons(contours, to_mm) -> MultiPolygon:
     return merged if isinstance(merged, MultiPolygon) else MultiPolygon([merged])
 
 
-def _reset_wordmark(raw: dict) -> tuple[MultiPolygon, list]:
+def _reset_wordmark(raw: dict, knockout_mm: float) -> tuple[MultiPolygon, list]:
     """Re-set the wordmark's two small-cap runs, keeping the M lockup.
 
     Returns the rebuilt wordmark and any stray pieces that turned out not to
@@ -157,7 +159,7 @@ def _reset_wordmark(raw: dict) -> tuple[MultiPolygon, list]:
     # which are part of the scope and so knock out of the letters too.
     in_front = unary_union(
         [raw[g] for g in ("scope", "rifle", "pistol") if g in raw] + strays
-    ).buffer(KNOCKOUT_MM)
+    ).buffer(knockout_mm)
 
     rebuilt = list(kept)
     for key, line in (("upper", WORDMARK_UPPER), ("lower", WORDMARK_LOWER)):
@@ -241,7 +243,7 @@ def vectorise(
         raw["subtext"] = text_mod.fit_line_to_box(SUBTEXT_LINE, raw["subtext"].bounds)
 
     if set_wordmark and "wordmark" in raw:
-        raw["wordmark"], strays = _reset_wordmark(raw)
+        raw["wordmark"], strays = _reset_wordmark(raw, KNOCKOUT_FRAC * width_mm)
         if strays and "scope" in raw:
             # Slivers of the scope's crosshair, showing through the gaps in
             # "ND", that land in the wordmark's band and get grouped with it.

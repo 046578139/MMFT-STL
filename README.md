@@ -15,8 +15,13 @@ in front of it. Designed to print in a black body with the mark in red.
 | ![top](docs/images/2color_top.png) | ![three colour](docs/images/3color_hero.png) |
 | Two colours — black and red | Three colours — lettering red, firearms bone |
 
-**160 × 70 × 71 mm.** Fits any bed from 180 mm up. No supports, no bridging,
-flat on the plate.
+**215 × 98 × 70.6 mm.** No supports, no bridging, flat on the plate.
+
+Sized up from an earlier 160 × 70 after a test print: at that size the mark
+carried detail finer than a 0.4 mm nozzle can lay down, and the lettering
+came out ragged with grey missing from the gaps between letters. The mark is
+now 145 mm wide instead of 90, which fixes it — see
+[docs/PRINTING.md](docs/PRINTING.md). **Print it with a 0.4 mm nozzle.**
 
 ### Raised or flush
 

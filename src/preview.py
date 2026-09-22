@@ -174,21 +174,21 @@ def main() -> None:
         "MMFT", "raised/MMFT"))
     render([single], [BLACK], IMG / "1color_hero.png", elev=26, azim=-62)
 
-    lettering_comparison(IMG / "subtext_before_after.png", "subtext")
-    lettering_comparison(IMG / "wordmark_before_after.png", "wordmark", px_per_mm=15.0)
+    lettering_comparison(IMG / "subtext_before_after.png", "subtext", px_per_mm=16.0)
+    lettering_comparison(IMG / "wordmark_before_after.png", "wordmark", px_per_mm=9.5)
 
     # A close-up, so the edge quality of the mark is actually visible: at the
     # size of the other renders one pixel is about 0.2 mm of real part.
     render([body, logo], [BLACK, RED], IMG / "detail.png",
-           elev=90, azim=-90, supersample=4, crop=(60, 31, 10.4, 19))
+           elev=90, azim=-90, supersample=4, crop=(92, 43, 10.0, 31))
 
     # Raised against flush, lit from a low angle so the relief reads.
     fbody = trimesh.load(STL / "flush" / "MMFT_Stand_black_body.stl")
     flogo = trimesh.load(STL / "flush" / "MMFT_Stand_red_logo_full.stl")
     render([body, logo], [BLACK, RED], IMG / "raised_detail.png",
-           elev=20, azim=-68, size=800, supersample=3, crop=(46, 33, 10.4, 21))
+           elev=20, azim=-68, size=800, supersample=3, crop=(69, 46, 10.0, 34))
     render([fbody, flogo], [BLACK, RED], IMG / "flush_detail.png",
-           elev=20, azim=-68, size=800, supersample=3, crop=(46, 33, 10.4, 21))
+           elev=20, azim=-68, size=800, supersample=3, crop=(69, 46, 10.0, 34))
 
 
 if __name__ == "__main__":
