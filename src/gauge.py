@@ -43,8 +43,9 @@ DEPTHS = (16.0, 19.0, 22.0, 25.0)
 STUB_RISE = 35.0        # enough to judge the fit; print these hollow
 FLANGE_T = 2.0
 FLANGE_MARGIN = 5.0     # flange overhang around the section
-LABEL_STRIP = 15.0      # extra flange at the front, for the size
-LABEL_CAP = 4.5         # cap height of the embossed size
+LABEL_STRIP = 22.0      # extra flange at the front, for the label
+LABEL_CAP = 4.2         # cap height of the first label line
+LABEL_CAP2 = 3.2        # cap height of the second line
 LABEL_RELIEF = 0.6
 TICK_EVERY = 5.0        # depth ticks up one narrow face
 TICK_DEPTH = 0.4
@@ -56,8 +57,15 @@ def corner_radius(depth: float) -> float:
     return min(build.BLADE_R, depth / 2 * 0.7)
 
 
-def stub(width: float, depth: float) -> trimesh.Trimesh:
-    """One gauge post: flange, straight stub, lead-in tip, depth ticks."""
+def stub(width: float, depth: float, lines: list[str] | None = None) -> trimesh.Trimesh:
+    """One gauge post: flange, straight stub, lead-in tip, depth ticks.
+
+    ``lines`` is what gets embossed on the flange; it defaults to the
+    section.  Platform stubs carry the platform on the first line and the
+    section on the second, because the section is the part worth reporting
+    back -- if a stub labelled for one pistol turns out to fit another, the
+    number is still the useful half.
+    """
     hx, hy = width / 2, depth / 2
     r = corner_radius(depth)
 
@@ -94,16 +102,67 @@ def stub(width: float, depth: float) -> trimesh.Trimesh:
         height += TICK_EVERY
     body = trimesh.boolean.difference([body, union(cuts)], engine="manifold")
 
-    label = text_mod.set_line(
-        "%gx%g" % (width, depth), text_mod.WORDMARK_FONT,
-        tracking_em=0.0, slant_deg=0.0)
-    lx0, ly0, lx1, ly1 = label.bounds
-    scale = LABEL_CAP / (ly1 - ly0)
     from shapely.affinity import scale as sc
-    label = sc(label, scale, scale, origin=(lx0, ly0))
-    lx0, ly0, lx1, ly1 = label.bounds
-    label = translate(label, -(lx0 + lx1) / 2, -ly0 - fy - LABEL_STRIP + 5.0)
-    return union([body, extrude(label, FLANGE_T, LABEL_RELIEF)])
+
+    if lines is None:
+        lines = ["%gx%g" % (width, depth)]
+    caps = (LABEL_CAP, LABEL_CAP2)
+    baselines = (-fy - 8.0, -fy - 16.0) if len(lines) > 1 else (-fy - 10.0,)
+
+    marks = []
+    for line, cap, base in zip(lines, caps, baselines):
+        geom = text_mod.set_line(line, text_mod.WORDMARK_FONT,
+                                 tracking_em=0.0, slant_deg=0.0)
+        gx0, gy0, gx1, gy1 = geom.bounds
+        k = cap / (gy1 - gy0)
+        geom = sc(geom, k, k, origin=(gx0, gy0))
+        gx0, gy0, gx1, gy1 = geom.bounds
+        marks.append(translate(geom, -(gx0 + gx1) / 2, base - gy0))
+
+    embossed = [extrude(m, FLANGE_T, LABEL_RELIEF) for m in marks]
+    return union([body] + embossed)
+
+
+# Sections to try, by platform.  Where a figure is measured it is used as
+# it stands; where none could be found the family is bracketed instead and
+# the stubs are named to say so.
+PLATFORMS = [
+    # (long axis, thin axis, first label line, what it is)
+    (33.1, 22.8, "GLOCK",  "Glock 9mm - 17/19/26/34/45, measured"),
+    (31.4, 21.6, "P320",   "Sig P320 9mm/.40/.357, measured"),
+    (34.8, 13.7, "1911",   "1911 single stack .45, measured"),
+    (34.2, 12.9, "1911-S", "1911 bracket, one size under"),
+    (35.4, 14.6, "1911-L", "1911 bracket, one size over"),
+    (34.0, 21.0, "2011-A", "2011 family bracket - no source found"),
+    (35.0, 22.5, "2011-B", "2011 family bracket - no source found"),
+    (35.8, 24.0, "2011-C", "2011 family bracket - no source found"),
+    (32.5, 23.5, "DS-A",   "P226 / M&P / FN bracket - no source found"),
+    (34.0, 25.0, "DS-B",   "P226 / M&P / FN bracket - no source found"),
+]
+
+
+def platforms() -> None:
+    """The platform-named set."""
+    out = OUT / "platforms"
+    out.mkdir(parents=True, exist_ok=True)
+    pitch_x = 2 * (max(p[0] for p in PLATFORMS) / 2 + FLANGE_MARGIN) + 8.0
+    pitch_y = (2 * (max(p[1] for p in PLATFORMS) / 2 + FLANGE_MARGIN)
+               + LABEL_STRIP + 8.0)
+
+    plate = []
+    for i, (w, d, name, note) in enumerate(PLATFORMS):
+        lines = [name, "%.1fx%.1f" % (w, d)]
+        one = stub(w, d, lines)
+        one.export(out / ("MMFT_Fit_%s.stl" % name))
+        placed = stub(w, d, lines)
+        placed.apply_translation(((i % 3) * pitch_x, (i // 3) * pitch_y, 0.0))
+        plate.append(placed)
+        print("  %-8s %5.1f x %5.1f mm   %s" % (name, w, d, note))
+    combined = trimesh.util.concatenate(plate)
+    combined.export(out / "MMFT_Fit_platforms_all.stl")
+    e = combined.extents
+    print("  -> %d stubs, %.0f x %.0f mm on the plate, %.1f cm3 of solid"
+          % (len(plate), e[0], e[1], combined.volume / 1000))
 
 
 def main() -> None:
@@ -134,3 +193,5 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+    print()
+    platforms()

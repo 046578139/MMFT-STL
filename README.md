@@ -233,6 +233,9 @@ different post on the same base.
 the magazine well sees it, and `BLADE_RISE` is how far the post stands above
 the plate. Change those three and rebuild.
 
-To find out what they should be for a given pistol, print the fit gauge in
-`stl/gauge/` — twelve labelled stubs spanning the likely range — and try
-them in the real thing. See [docs/FITTING.md](docs/FITTING.md).
+To find out what they should be for a given pistol, print the fit gauge and
+try it in the real thing. `stl/gauge/platforms/` holds ten stubs aimed at
+specific pistols — Glock, P320, 1911 and brackets for the 2011 family and
+the other double stacks; `stl/gauge/` holds a plain size grid for anything
+those miss. See [docs/FITTING.md](docs/FITTING.md), which also lists the
+magazine sections that could actually be sourced.
