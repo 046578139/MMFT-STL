@@ -67,23 +67,41 @@ key="extruder">`).
 
 ## Which filament
 
-For a stand that lives on a shop counter and has guns lifted off and dropped
-back on all day, the answer is **PETG**.
+For a stand that lives on a shop counter and has guns lifted off and
+dropped back on all day, the answer is **PETG** — but for one reason, not
+the two I would have guessed.
 
-The two things that kill a part like this are not strength in the ordinary
-sense — nothing here is near its load limit — but **brittleness** and
-**heat**.
+**Strength does not come into it.** The post's root section has a modulus
+of 4314 mm³, and a Glock 17 leaning at 10.9° puts a moment of 0.118 N·m
+into it. That is a stress of **0.028 MPa**, against roughly 35 MPa for PLA
+across its layer lines — a safety factor of about **1275**. A steel-framed
+P226 makes it 0.037 MPa. Five kilos of someone leaning on the post is
+0.20 MPa, still 170× under. Nothing about holding a pistol troubles any
+filament you might reasonably load.
 
-* **Brittleness.** The blade prints standing up, so every time a pistol is
-  set on it or knocked sideways the load pulls across the layer lines at the
-  root. PLA is stiff and strong but notch-sensitive: it takes that kind of
-  abuse for months and then snaps clean off one afternoon. PETG is far more
-  forgiving — it bends and springs back where PLA cracks, and it welds
-  between layers better, which is exactly the direction the load runs.
-* **Heat.** PLA starts going soft around 55–60 °C. A black part in a sunny
-  window, in a lit display case, or left in a vehicle in July will get
-  there. When it does, the blade droops and never comes back. PETG holds its
-  shape to about 80 °C.
+So infill in the base is **ballast, not structure** — a heavier plate sits
+better on a counter, and that is the only reason to run 30 %.
+
+What is left is **heat**, and that one is real rather than theoretical.
+PLA starts going soft around 55–60 °C. A dark part in a sunny window, in a
+lit display case, or in a vehicle in July gets there easily. When it does
+the post droops under a load it would otherwise ignore forever, and it does
+not come back. PETG holds its shape to about 80 °C. That margin, plus
+better UV stability over months of window light, is the whole case.
+
+Impact matters a little as well — PLA is notch-sensitive where PETG bends
+and springs back — but it is a second-order argument, not the main one.
+
+**If the stands stay indoors, away from windows, and never travel in a hot
+vehicle, PLA is a perfectly sound choice.** An impact-modified one beats
+plain, and a matte finish suits a display piece. It renders the fine logo
+detail marginally more crisply than PETG and is easier on a 215 mm flat
+plate. The case for PETG is environmental, not structural.
+
+**Whatever you pick, use the same material family for all three colours.**
+PETG and PLA barely bond to one another, and on the flush inlay the colours
+interlock inside the same three layers — a mixed print would leave the mark
+sitting in its pocket with nothing holding it there.
 
 PETG also keeps its colour under UV far longer than PLA, prints on any
 machine without an enclosure, and comes in a good deep black and a strong
