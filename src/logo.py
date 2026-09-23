@@ -182,6 +182,7 @@ def vectorise(
     width_mm: float,
     px_per_mm: float = 24.0,
     bold_mm: float = 0.15,
+    ink_level: float = 0.70,
     simplify_mm: float = 0.02,
     set_subtext: bool = True,
     set_wordmark: bool = True,
@@ -190,6 +191,14 @@ def vectorise(
 
     The logo is placed with its bounding box origin at (0, 0) and y pointing
     up, so callers only have to translate it into place.
+
+    ``ink_level`` is where the boundary between ink and paper is taken to
+    be, on a 0 (black) to 1 (white) scale.  The obvious 0.5 cuts through the
+    middle of the anti-aliasing, and at this source's resolution that is
+    enough to break the thinnest closed shapes: the pistol's trigger guard
+    comes apart at the bottom and its opening drains into the background,
+    and one of the rifle's counters goes the same way.  0.70 holds both
+    closed at a cost of about 4 % more ink overall.
 
     ``bold_mm`` grows every stroke by that much per side.  At our print size
     the scope ring is about 0.42 mm and parts of the pistol are thinner
@@ -204,7 +213,7 @@ def vectorise(
     """
     gray = _load_gray(path, px_per_mm, width_mm)
     H, W = gray.shape
-    mask = gray < 0.5
+    mask = gray < ink_level
 
     labels = measure.label(mask, connectivity=2)
     props = measure.regionprops(labels)
@@ -233,7 +242,7 @@ def vectorise(
         near = ndimage.binary_dilation(sel, iterations=3)
         g = np.where(near, gray, 1.0)
         g = np.pad(g, 2, constant_values=1.0)
-        contours = measure.find_contours(g, 0.5)
+        contours = measure.find_contours(g, ink_level)
         raw[group] = _contours_to_polygons([c - 2 for c in contours], to_mm)
 
     # Swap the traced lettering for properly set outlines, dropped into the

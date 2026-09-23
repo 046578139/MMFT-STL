@@ -178,6 +178,21 @@ have broken the way they interlock.
 `.pdf`), that would beat all of this — send it over and the whole mark can
 come from it rather than from a 720 px raster.
 
+### Where the ink/paper boundary is taken
+
+Tracing needs a level at which a grey anti-aliased pixel stops counting as
+paper and starts counting as ink. The obvious choice is halfway, and
+halfway is wrong for this artwork: it cuts through the middle of the
+anti-aliasing and the thinnest closed shapes come apart. The pistol's
+trigger guard breaks at the bottom, its opening drains into the
+background, and what should be a clean loop prints as a hook with the plate
+colour flooding into it. One of the rifle's counters goes the same way.
+
+The level is `ink_level` in `src/logo.py` and sits at **0.70**. That holds
+both guards closed for about 4 % more ink overall, and closing them costs
+nothing in printability — every gap in the mark still clears a 0.4 mm
+nozzle, and the recovered guard opening is 2.1 mm across.
+
 ### One thing the re-setting fixed
 
 The scope's crosshair shows through two gaps in "ND", and the artwork holds
