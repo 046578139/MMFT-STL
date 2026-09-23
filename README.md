@@ -30,21 +30,21 @@ in whether it stands on the plate or is let into it.
 
 | ![raised](docs/images/raised_detail.png) | ![flush](docs/images/flush_detail.png) |
 |---|---|
-| **`stl/raised/`** — stands 0.8 mm proud | **`stl/flush/`** — let 0.8 mm into the plate |
+| **`stl/raised/`** — stands 0.6 mm proud | **`stl/flush/`** — let 0.6 mm into the plate |
 
 **Flush is the one to print for a shop counter.** Nothing stands above the
 surface to be caught or chipped, and every piece of the mark is boxed in on
 all four sides by the black around it — a muzzle dragged across it just
 slides. It needs a multi-material printer, because black and red share the
-same four layers.
+same three layers.
 
 **Raised** is there because it prints in two colours on *any* printer. Every
 layer above the plate is mark and nothing else, so a single extruder only
-needs a filament change at Z = 10.0 mm and another at Z = 10.8 mm. The
-trade-off is that a few pieces are small: the two accent marks in the
-wordmark have a footprint under 0.75 mm², which is not much holding a 0.8 mm
-tall nub. Most of the mark is far sturdier than that, but those are the
-pieces that would go first.
+needs a filament change at Z = 9.6 mm and another at Z = 10.2 mm. The
+trade-off is that two pieces are small — the slivers of the scope's
+crosshair showing through "ND", at 0.71 and 1.02 mm², which is not much
+holding a 0.6 mm tall nub. Everything else is far sturdier since the mark
+was scaled up; the smallest piece of lettering is now 9.6 mm².
 
 ### One file, or several
 

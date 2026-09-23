@@ -2,30 +2,42 @@
 
 ## On a Bambu Lab H2C
 
-Open **`3mf/MMFT_Stand_flush_2color.3mf`** and print it in **Bambu PETG HF**,
-Black and Red.
+Open **`3mf/MMFT_Stand_flush_2color.3mf`** and print it in **Bambu PETG
+Basic**, black and red.
 
 That one file holds both parts, already positioned and already tagged with
 the filament slot each wants, so there is nothing to import twice or line up
 by hand. The `stl/flush/` set is the same model if you would rather load the
 parts yourself.
 
-The H2C's Vortek system gives each material its own hotend and changes
-between them without purging, so the argument that usually counts against a
-flush inlay — black and red swapping over inside every one of its four
-layers — costs you almost nothing here. On a single-hotend machine that
-waste is the reason to consider the raised set instead. On this one there is
-no reason not to take the more durable version.
+**On PETG Basic rather than PETG HF.** HF was the recommendation here until
+Bambu began phasing it out in every colour but black and brought back a
+reformulated Basic in its place, so for a three-colour print HF may simply
+not be available in red or white. Basic is the better choice regardless:
+published figures put it ahead on flexural strength, layer adhesion and
+impact, and it was reformulated specifically to string less and pick up
+less moisture. Stringing is the one that matters on this model — the flush
+inlay puts three colours inside the same three layers, so there are a lot
+of tool changes happening right at the surface you end up looking at. What
+you give up is HF's matte finish; Basic is glossier, which is a matter of
+taste rather than a defect.
 
-PETG HF suits it on the merits too: it is the tough, heat-tolerant choice
-argued for below, it is tuned for high-speed printing, and its matte finish
-hides layer lines in a way that flatters a display piece. It is RFID-tagged
-so the AMS 2 Pro picks up its settings, and since PETG wants drying before
-use, run it in the AMS for a few hours first — the 2 Pro is heated for
-exactly this.
+Either way, dry it first. PETG is hygroscopic and a damp spool strings
+badly, which again lands on the visible face. The AMS 2 Pro is heated for
+exactly this — a few hours in it before the print is enough.
 
-For the three-colour set, take the light colour from the same PETG HF range
-(white or a light grey) so all three behave identically on the plate.
+Third-party PETG works too. You lose the RFID profile, so pick a generic
+PETG profile and dry the spool yourself.
+
+For the three-colour set, take the light colour from the same range as the
+other two so all three behave identically on the plate.
+
+**On purging.** The H2C can assign filaments across nozzles and swap
+hotends rather than purge, which is why a flush inlay costs so little here
+compared with a single-hotend machine. That only holds when the filaments
+actually end up spread across nozzles — check the Filament Grouping panel.
+With all three assigned to one nozzle every colour change is a real purge,
+and "Regroup filament" is worth a click before slicing.
 
 One thing worth trying: the thinnest features in the mark are 0.42 mm
 against a 0.4 mm nozzle, which works but with nothing to spare. The H2C
@@ -186,27 +198,29 @@ replaces.
 
 Pick this first; it decides which folder you print from.
 
-**`stl/flush/` — the mark is let 0.8 mm into the plate, sitting level with
+**`stl/flush/` — the mark is let 0.6 mm into the plate, sitting level with
 it.** This is what to print for a shop counter. Nothing stands above the
 surface, so there is nothing for a muzzle or a slide to catch, and each
 piece of the mark is surrounded on all four sides by the black plate — to
 move one you would have to break the plate. It needs a multi-material
-printer: black and red occupy the same four layers.
+printer: black and red occupy the same three layers.
 
-**`stl/raised/` — the mark stands 0.8 mm proud.** Print this if you have a
+**`stl/raised/` — the mark stands 0.6 mm proud.** Print this if you have a
 single extruder, because it is the version that can be done with filament
 changes. Everything above the top of the plate is mark and nothing else.
 
-The reason the distinction matters is scale. Most of the mark is chunky —
-the rifle alone has a 300 mm² footprint. But the two small accent marks in
-the wordmark are under 0.75 mm², and raised they are 0.8 mm tall nubs held
-on by that much bonded area, loaded in peel if something catches their edge.
-Nothing about that is unusual for a raised logo, and plenty of parts live
-like that for years; it is simply a failure mode that the flush version does
-not have.
+The reason the distinction matters is scale, though far less than it used
+to. Since the mark was scaled up, the smallest piece of lettering has a
+9.6 mm² footprint and the rifle alone has 1900 mm² — raised, none of that is
+delicate. What is still small are the two slivers of the scope's crosshair
+showing through the gaps in "ND", at 0.71 and 1.02 mm². Raised, those are
+0.6 mm tall nubs held on by that much bonded area and loaded in peel if
+something catches an edge. Nothing about that is unusual for a raised logo,
+and plenty of parts live like that for years; it is simply a failure mode
+the flush version does not have at all.
 
 The flush version costs more filament in purge — black and red change over
-inside every one of those four layers rather than twice for the whole print.
+inside every one of those three layers rather than twice for the whole print.
 Budget a few extra cubic centimetres of waste. This does not apply to a
 printer that swaps hotends rather than purging, such as the H2C.
 
@@ -238,8 +252,8 @@ above the top of the plate is mark and nothing else.
 Use the **`stl/raised/`** set for this.
 
 1. Slice `raised/MMFT_Stand_one_piece.stl`.
-2. Add a filament change at **Z = 10.0 mm** — the top of the plate.
-3. Add a second one at **Z = 10.8 mm** — the top of the mark.
+2. Add a filament change at **Z = 9.6 mm** — the top of the plate.
+3. Add a second one at **Z = 10.2 mm** — the top of the mark.
 4. Load black, and swap to red and back when the printer pauses.
 
 Place the changes by **Z height** in the slicer's preview rather than by
@@ -253,7 +267,7 @@ heights.
   read the layer number off the preview at that Z.
 
 Three colours cannot be done this way. The red lettering and the light
-firearms sit in the same four layers, so that set needs a multi-material
+firearms sit in the same three layers, so that set needs a multi-material
 printer.
 
 ### One colour
