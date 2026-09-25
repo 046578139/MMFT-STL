@@ -32,12 +32,37 @@ PETG profile and dry the spool yourself.
 For the three-colour set, take the light colour from the same range as the
 other two so all three behave identically on the plate.
 
-**On purging.** The H2C can assign filaments across nozzles and swap
-hotends rather than purge, which is why a flush inlay costs so little here
-compared with a single-hotend machine. That only holds when the filaments
-actually end up spread across nozzles — check the Filament Grouping panel.
-With all three assigned to one nozzle every colour change is a real purge,
-and "Regroup filament" is worth a click before slicing.
+**On purging, and why the flush inlay is nearly free on this machine.**
+An earlier version of this note said that assigning all three colours to
+one nozzle would make every colour change a real purge, and that they
+needed spreading across nozzles. That is how a conventional AMS printer
+behaves, and it is wrong for the H2C.
+
+The H2C's right-hand side is the Vortek system: a rack of up to six
+induction-heated hotends that the printhead physically swaps, heating each
+one to temperature in about eight seconds. The left nozzle is a
+conventional fixed hotend that cannot be changed mid-print. Each filament
+gets its own dedicated hotend, so changing colour means stowing one hotend
+and picking up another rather than pushing a new colour through the old
+one. **Up to seven filaments — one on the left plus six on the Vortek rack
+— print with no purge flushing at all.**
+
+This print uses three. Whether they sit entirely on the right-hand AMS
+units or are split across left and right makes no difference to waste:
+three is comfortably under seven either way, so there is nothing to purge
+and nothing to regroup. All three on the right is the simpler arrangement
+and the one to use.
+
+This is exactly why the flush inlay is the right choice here. On a
+single-hotend printer it would be the expensive option — black and red
+change over inside every one of the inlay's layers instead of twice for
+the whole print. On the H2C those changes are hotend swaps, so the flush
+version costs essentially nothing extra.
+
+The one thing worth confirming in the preview is that the slicer really did
+give each colour its own hotend rather than reusing one. If it has, the
+prime tower will be small and there will be no flush volume between
+colours.
 
 The tightest thing in the mark is a 0.460 mm gap between two separate
 shapes, and a 0.4 mm nozzle clears it by 0.06 mm — it works, but with very
@@ -325,10 +350,11 @@ something catches an edge. Nothing about that is unusual for a raised logo,
 and plenty of parts live like that for years; it is simply a failure mode
 the flush version does not have at all.
 
-The flush version costs more filament in purge — black and red change over
-inside every one of those three layers rather than twice for the whole print.
-Budget a few extra cubic centimetres of waste. This does not apply to a
-printer that swaps hotends rather than purging, such as the H2C.
+On a single-hotend printer the flush version costs more filament in purge —
+black and red change over inside every one of the inlay's layers rather than
+twice for the whole print, so budget a few extra cubic centimetres of waste.
+**None of that applies to the H2C**, which swaps hotends instead of purging;
+see *On purging* above.
 
 ## Getting the mark in red
 
