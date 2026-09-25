@@ -17,11 +17,19 @@ in front of it. Designed to print in a black body with the mark in red.
 
 **215 × 98 × 70.6 mm.** No supports, no bridging, flat on the plate.
 
-Sized up from an earlier 160 × 70 after a test print: at that size the mark
-carried detail finer than a 0.4 mm nozzle can lay down, and the lettering
-came out ragged with grey missing from the gaps between letters. The mark is
-now 145 mm wide instead of 90, which fixes it — see
-[docs/PRINTING.md](docs/PRINTING.md). **Print it with a 0.4 mm nozzle.**
+Sized up from an earlier 160 × 70 after a test print: at that size the gaps
+*between* the letters were narrower than a nozzle could lay a bead into, so
+they filled in and the lettering came out ragged. The mark is now 145 mm
+wide instead of 90, and the narrowest gap in it is 0.460 mm.
+
+**Print it with a 0.4 mm nozzle.** That number is why: a 0.6 mm nozzle lays
+a bead wider than the gap and fuses four separate pieces of the mark into
+one blob, and no slicer setting can undo it.
+
+One thing to know before these go on a counter: the stand is enormously
+stronger than it needs to be, but it tips sideways at about 0.65 lbf, and
+**infill does not fix that** — see
+[Will it stay put](docs/PRINTING.md#will-it-stay-put).
 
 ### Raised or flush
 
@@ -108,9 +116,10 @@ overlap for a slicer to argue with.
 
 `flush/MMFT_Stand_engraved_one_piece.stl` is the flush plate with its
 pockets left empty — one colour, nothing proud of the surface at all. The
-thinnest strokes are around 0.4 mm, so a 0.4 mm nozzle will skip some of the
-finest detail in the scope and the pistol; the lettering comes through
-cleanly.
+engraved channels are comfortably printable (the thinnest is 1.72 mm); what
+is marginal is the ribs of plate left standing *between* them, the narrowest
+of which is 0.46 mm — about one bead wide, so a few will look soft. The
+lettering comes through cleanly.
 
 See [docs/PRINTING.md](docs/PRINTING.md) for settings and filament choice.
 

@@ -39,13 +39,14 @@ actually end up spread across nozzles — check the Filament Grouping panel.
 With all three assigned to one nozzle every colour change is a real purge,
 and "Regroup filament" is worth a click before slicing.
 
-One thing worth trying: the thinnest features in the mark are 0.42 mm
-against a 0.4 mm nozzle, which works but with nothing to spare. The H2C
-ships with a 0.2 mm hotend, so if the finest detail in the scope and the
-pistol matters to you, it is worth checking whether your slicer will let you
-drive the mark with the 0.2 mm and the rest of the part with a 0.4 mm. I
-have not verified that this particular combination is supported — confirm it
-in Bambu Studio before planning a batch around it.
+One thing worth trying: the tightest thing in the mark is a 0.460 mm gap
+between two separate shapes, and a 0.4 mm nozzle clears it by 0.06 mm — it
+works, but with very little to spare. The H2C ships with a 0.2 mm hotend, so
+if you want the mark as sharp as this model can render it, it is worth
+checking whether Bambu Studio will let you drive the two logo bodies with
+the 0.2 mm and the plate and post with the 0.4 mm. I have not verified that
+this combination is supported — confirm it before planning a batch around
+it, and do not try to print the whole 246 cm³ part through the 0.2 mm.
 
 ### "The 3mf file has invalid config, load geometry data only"
 
@@ -83,16 +84,20 @@ For a stand that lives on a shop counter and has guns lifted off and
 dropped back on all day, the answer is **PETG** — but for one reason, not
 the two I would have guessed.
 
-**Strength does not come into it.** The post's root section has a modulus
-of 4314 mm³, and a Glock 17 leaning at 10.9° puts a moment of 0.118 N·m
-into it. That is a stress of **0.028 MPa**, against roughly 35 MPa for PLA
-across its layer lines — a safety factor of about **1275**. A steel-framed
-P226 makes it 0.037 MPa. Five kilos of someone leaning on the post is
-0.20 MPa, still 170× under. Nothing about holding a pistol troubles any
-filament you might reasonably load.
+**Strength does not come into it.** Take the post as it actually prints —
+hollow, six walls of 0.40 mm, ignoring the infill entirely — and its root
+section modulus is 1663 mm³. Against PETG's roughly 45 MPa across its layer
+lines, the post does not fail until something pushes **578 N (130 lbf)**
+sideways at the slide. In PLA it is 450 N (101 lbf).
 
-So infill in the base is **ballast, not structure** — a heavier plate sits
-better on a counter, and that is the only reason to run 30 %.
+You will never see those numbers, because **the stand tips over at 2.9 N
+(0.65 lbf)** — about 200× sooner. Every failure mode this design has is a
+tipping problem, not a strength problem, and no filament choice or infill
+percentage changes that. See *Will it stay put* below.
+
+So infill in the base is neither structure **nor** useful ballast: going
+from 15 % to 100 % adds 187 g and buys 25 % more tip resistance, which is
+not worth having. Run 25 % and put the weight somewhere that works.
 
 What is left is **heat**, and that one is real rather than theoretical.
 PLA starts going soft around 55–60 °C. A dark part in a sunny window, in a
@@ -138,49 +143,106 @@ they chew through brass nozzles, and the fibres dull the fine lettering.
 
 ## Settings
 
-Nothing exotic. Start from your printer's stock PETG profile and change:
+Two profiles below. The **display profile** is what to print now: the brief
+is maximum quality and print time does not matter. The **batch profile** is
+there for when you want a dozen of these and an overnight print each is too
+much.
 
-| Setting | Value | Why |
-|---|---|---|
-| Nozzle | **0.4 mm** | See below — a 0.6 mm nozzle cannot render this mark. |
-| Layer height | **0.20 mm** | Plate, pocket floor and inlay all land exactly on layer boundaries. 0.30, 0.15 and 0.12 mm do too. |
-| Seam position | **Scarf joint** | Otherwise the seams stack into a visible line up one face of the post. |
-| Walls / perimeters | **4** | The blade carries its load in the walls, not the infill. |
-| Infill | **30 %**, gyroid or grid | Also adds useful weight to the base. |
-| Top layers | **5** | The mark sits on this surface; it needs to be flat and solid. |
-| Bottom layers | 4 | |
-| Nozzle temp | High end of the range (**typically 240–250 °C** for PETG) | Layer adhesion at the blade root. |
-| Part cooling | **30–50 %** | Full blast weakens PETG layer bonding. |
-| Supports | **None** | Nothing overhangs. The blade leans 10.9°, well inside what prints unsupported. |
-| Orientation | As exported, flat on the plate | Puts the layer lines where they do the most good. |
+One constraint binds both, and it is not negotiable: **the layer height has
+to divide both 9.6 mm and 0.6 mm exactly.** 9.6 mm is the top of the plate,
+0.6 mm is the inlay, and if either lands mid-layer the slicer rounds it and
+the mark ends up shallower or deeper than the pocket it sits in. That admits
+0.30, 0.20, 0.15, 0.12 and 0.10 mm. It rules out 0.08 mm — the inlay comes
+to 7.5 layers — which is the one most people reach for when they want
+"finest".
 
-The solid model is about 246 cm³; at the settings above expect somewhere
-around 140–170 g of filament. Your slicer will give you the real number.
+| Setting | Display | Batch | Why |
+|---|---|---|---|
+| Nozzle | **0.4 mm** | 0.4 mm | Hard limit. See below — 0.6 mm cannot render this mark, and no amount of extra time fixes that. |
+| Line width | **0.40 mm** | 0.42 mm | The narrowest gap in the mark is 0.460 mm. Staying under it is the whole game. |
+| Layer height | **0.10 mm** | 0.20 mm | 96 layers to the top of the plate, 6 for the inlay. Both exact. |
+| First layer | 0.20 mm | 0.20 mm | Adhesion over a 215 mm footprint. Does not affect the heights above. |
+| Walls | **6** | 4 | The post carries its load entirely in the walls. Also the post's surface *is* its walls. |
+| Top solid | **1.2 mm** (12 layers) | 1.0 mm (5) | Specify it in millimetres, not layers. At 0.10 mm, "5 top layers" is only 0.5 mm and will pillow. |
+| Bottom solid | 0.8 mm (8 layers) | 0.8 mm (4) | |
+| Infill | **25 %** gyroid | 25 % gyroid | Not structural and it does not help stability either — see below. 25 % is simply enough to hold the top surface flat. |
+| Nozzle temp | 240–250 °C | 240–250 °C | High end of the PETG range, for layer adhesion at the blade root. |
+| Bed | 70–80 °C | 70–80 °C | |
+| Part cooling | 30–50 % | 30–50 % | Full blast weakens PETG layer bonding. |
+| Outer wall speed | **25–30 mm/s** | 50 mm/s | The single biggest lever on visible surface quality, and where your unlimited time actually buys something. |
+| Seam position | **Scarf joint** | Scarf joint | Otherwise the seams stack into a visible line up one face of the post. This is the line you saw. |
+| Ironing | **Off** | Off | See the warning below — on the flush set it drags black into the red. |
+| Supports | None | None | Nothing overhangs. The blade leans 10.9°, well inside what prints unsupported. |
+| Brim | None | None | PETG needs no help here, and removing a brim from a 215 mm perimeter is worse than the problem. |
+| Orientation | As exported, flat | As exported | Puts the layer lines where they do the most good. |
+
+The solid model is 246 cm³. At 25 % infill expect roughly **150 g**; the
+slicer will give you the real number.
+
+**Do not turn ironing on for the flush set.** Ironing drags a hot nozzle
+sideways across the finished top surface, and on the flush inlay black and
+red *share* that surface. It will smear one into the other along every
+boundary — which is every edge of the mark. If you want ironing, it is only
+safe on the single-colour engraved version.
+
+**Where the extra time actually goes.** Of the settings above, the ones that
+change what you see are the layer height on the post's leaning curved flank
+and on the plate's 2 mm top round-over, and the outer wall speed everywhere.
+Infill, walls beyond about four, and top layers beyond 1.2 mm cost hours and
+change nothing visible.
 
 ### Why a 0.4 mm nozzle, and not 0.6
 
-Not because the strokes are thin — at this size the thinnest is 0.48 mm. It
-is the **gaps**. Between the letters, and between the lettering and the
-firearms, the plate colour has to be laid down in a narrow channel, and a
-nozzle cannot lay a bead narrower than itself. Where the channel is too
-narrow the slicer puts nothing there at all, and you get an empty trench
-instead of a clean edge.
+**It is the gaps, not the strokes.** This is worth being precise about,
+because the obvious worry — that the lettering is too fine to print — turns
+out not to be the problem at all.
 
-At 0.4 mm there is now nothing in the mark it cannot fill. At 0.6 mm five
-channels are still too narrow, mostly around the sub-text — printable, but
-expect those few to close up.
+Measured on the actual geometry, at the current 145 mm mark size:
 
-An earlier version of this model made the problem far worse. Every stroke
-was grown 0.15 mm per side so that the finest details would survive, which
-worked, but growing strokes narrows the gaps between them by the same
-amount: it left 21 channels a 0.4 mm nozzle could not fill, and 29 for a
-0.6 mm. Scaling the mark up and cutting that growth to 0.05 mm fixed both
-ends at once.
+| | |
+|---|---|
+| Ink in the mark | 3005 mm² across 36 separate shapes |
+| Thinnest *whole shape* | 1.72 mm — nothing is delicate |
+| Narrowest interior counter (the hole in an **A**, etc.) | 1.13 mm |
+| Ink living in features narrower than 0.42 mm | **0.09 %** — tapered tips and corners only |
+| **Narrowest gap between two separate shapes** | **0.460 mm** |
 
-| | thinnest stroke | gaps a 0.4 mm nozzle can't fill | gaps a 0.6 mm can't fill |
-|---|---|---|---|
-| Old: 90 mm mark, 0.15 mm growth | 0.57 mm | 21 | 29 |
-| **Now: 145 mm mark, 0.05 mm growth** | **0.48 mm** | **0** | **5** |
+That last row is the one that decides the nozzle. Between the letters, and
+between the lettering and the firearms, the plate has to show through a
+channel 0.46 mm wide. A printer cannot lay a bead narrower than its nozzle,
+so once the line width reaches 0.46 mm the two shapes either side stop being
+separate and fuse into one blob.
+
+| Line width | Shapes that fuse | Counters that close |
+|---|---|---|
+| 0.40 mm (0.4 nozzle, display profile) | **0** | **0** |
+| 0.42 mm (0.4 nozzle, batch profile) | **0** | **0** |
+| 0.45 mm | 0 | 0 |
+| 0.50 mm | 4 | 0 |
+| 0.62 mm (0.6 nozzle, stock) | **4** | 0 |
+| 0.68 mm (0.6 nozzle, wide) | **5** | 0 |
+
+A 0.4 mm nozzle clears the 0.46 mm limit with room to spare. A 0.6 mm nozzle
+does not, and cannot be made to — this is what you were looking at when the
+first test print came back with the gap between the **N** and the **T**
+filled in. It was not a slicing setting and not a quality problem. The
+nozzle was simply wider than the gap.
+
+An earlier version of the model made this far worse. Every stroke was grown
+0.15 mm per side so the finest details would survive, which worked, but
+growing strokes *narrows the gaps between them by the same amount*. Scaling
+the mark from 90 mm to 145 mm and cutting that growth to 0.05 mm fixed both
+ends at once: the strokes got thicker in absolute terms and the gaps got
+wider.
+
+**If your H2C will do it**, the best-quality option is to drive the two logo
+bodies with the 0.2 mm hotend and the plate and post with the 0.4 mm. At a
+0.22 mm line the 0.46 mm gaps get better than twice the clearance they need
+and the corners come out visibly sharper. I have not verified that Bambu
+Studio exposes per-object nozzle assignment on this machine — confirm it
+before planning around it. Printing the whole 246 cm³ part through a 0.2 mm
+nozzle is not the alternative; that is a multi-day print in a material that
+is prone to clogging at that diameter.
 
 ### The line up one side of the post
 
@@ -277,9 +339,116 @@ Two options, neither needing a filament change:
 * `raised/MMFT_Stand_one_piece.stl` — the mark standing proud of the plate.
 * `flush/MMFT_Stand_engraved_one_piece.stl` — the mark cut into the plate
   instead. Nothing proud of the surface at all, so it is the most durable
-  thing here, but the thinnest strokes are about 0.4 mm and a 0.4 mm nozzle
-  will skip some of the finest detail in the scope and the pistol. The
-  lettering comes through cleanly.
+  thing here. The engraved channels are not the concern — the thinnest is
+  1.72 mm — but the *ribs of plate left standing between them* are, and the
+  narrowest of those is 0.46 mm, barely one bead wide. Expect a few of them
+  to look soft. The lettering itself comes through cleanly, and this is the
+  one version it is safe to iron.
+
+## Will it stay put
+
+Short answer: **it is far stronger than it needs to be and less stable than
+I would want on a shop counter.** If you change one thing before putting
+these out front, change the weight, not the infill.
+
+All of the following is calculated from the actual model geometry — the
+stand's real centre of mass at (118.9, 49.0, 10.7) mm — with a pistol
+treated as a point mass on the post. Note that the post goes *up inside*
+the magazine well, so the gun's mass sits low and does not perch on the tip.
+
+It has not been measured on a finished print. Treat it as the right order of
+magnitude and the right *ranking* of the options, not as three-significant-
+figure truth. Every number here, and every feature width quoted above, is
+reproduced by **`python src/analysis.py`**.
+
+### The numbers
+
+With a 625 g Glock 17 on it, at 25 % infill, pushing sideways at the slide:
+
+| | Force to tip it |
+|---|---|
+| **Sideways, off the long edge** | **2.9 N — 0.65 lbf** |
+| Backward, off the end behind the post | 3.6 N — 0.80 lbf |
+| Forward, over the logo | 12 N — 2.7 lbf |
+
+A heavier pistol helps a little, because the extra weight sits mostly low:
+a SIG P226 goes to 4.2 N, a loaded Staccato 2011 to 4.7 N.
+
+0.65 lbf is not much. It is a firm nudge with the back of your hand. The
+geometry is simply against you — the plate is 98 mm wide with the post on
+its centreline, so there is only 49 mm of lever holding up a pistol whose
+mass sits around 100 mm in the air.
+
+### Why infill is the wrong lever
+
+This was the obvious thing to reach for and it does almost nothing:
+
+| Infill | Stand mass | Sideways tip |
+|---|---|---|
+| 15 % | 126 g | 2.79 N |
+| 25 % | 148 g | 2.87 N |
+| 50 % | 203 g | 3.07 N |
+| 100 % | 312 g | 3.48 N |
+
+Going from 15 % to solid adds 187 g of filament and hours of print time to
+move the number by a quarter. The reason is that infill adds mass *spread
+through the whole part*, including the post, so it raises the centre of
+mass almost as fast as it raises the weight.
+
+### What does work
+
+Mass low down. Ballast adds weight *and* drags the centre of mass toward
+the plate, so it works on both terms at once:
+
+| Ballast at plate level | Total weight | Sideways | Backward |
+|---|---|---|---|
+| none | 1.7 lb | 2.9 N | 3.6 N |
+| +500 g | 2.8 lb | 4.7 N | 7.6 N |
+| +1000 g | 3.9 lb | 6.6 N | 11.7 N |
+
+Practical ways to get it there, roughly in order of how much I like them:
+
+1. **Fasten the stand down.** If the display is a fixed shelf, two
+   countersunk screws through the plate ends the conversation permanently
+   and costs nothing. For a storefront this is usually the right answer.
+2. **A steel plate bonded underneath.** 215 × 98 × 3 mm of steel is about
+   500 g. Flat, invisible from the front, no model change needed.
+3. **Lead tape or stick-on wheel weights** in the corners, if you would
+   rather not commit to a full plate.
+4. **A cast-in cavity** filled with shot or sand and capped. This is the
+   tidiest result and the most work, and it needs a model change: a pocket
+   opening downward cannot simply be bridged over a 70 mm span, so it would
+   have to be a ribbed or cellular pocket with individually bridgeable
+   cells, or a separate glued-on cap.
+
+I have not made any of these changes to the model. Say the word and I will
+add a ballast provision properly.
+
+### The counterintuitive bit: do not use rubber feet
+
+When something knocks the pistol, the stand can either **slide** — which is
+harmless, the gun stays put and the stand scoots an inch — or **tip**, which
+puts a firearm on the floor. Which one happens is decided by the friction
+under it, and the grippier the feet, the more likely you get the bad one:
+
+| Underside | Slides at | Verdict (no ballast, tips at 2.9 N) |
+|---|---|---|
+| Bare PETG on laminate | 2.3 N | **slides first** — gun stays on |
+| Felt pads | 2.7 N | slides first, but only just |
+| Cork | 4.2 N | **tips first** |
+| Rubber / silicone feet | 6.1 N | **tips first** |
+
+So the instinct to stick a rubber mat under a display stand is exactly
+wrong here. Leave it on bare plastic or felt, and it fails safe. Add 500 g
+of ballast and felt gets a comfortable margin again (slides at 4.4 N, tips
+at 4.7 N) — but rubber is still the wrong choice even then.
+
+### Strength, for completeness
+
+None of the above is about the part breaking. Printed hollow with six
+walls, the post does not fail until roughly **578 N (130 lbf)** pushes
+sideways at the slide — about 200 times the force that tips the whole stand
+over. You will never break one of these by using it.
 
 ## Before you print a batch
 
@@ -289,5 +458,7 @@ real firearm. If it is tight, a few passes with sandpaper along the blade
 sorts it out; if it is loose, raise `BLADE_HX` / `BLADE_HY` in
 `src/build.py` by a few tenths and rebuild.
 
-A few felt pads or a strip of rubber mat on the underside keeps it from
-sliding on a glass counter and stops it marking the surface.
+**Do not put rubber feet or a grippy mat under it.** That sounds backwards,
+so see *Will it stay put* below — with this much height and this narrow a
+base, high-grip feet convert a harmless slide into a topple. Felt or bare
+plastic is the right answer unless you have added ballast.
