@@ -39,14 +39,23 @@ actually end up spread across nozzles — check the Filament Grouping panel.
 With all three assigned to one nozzle every colour change is a real purge,
 and "Regroup filament" is worth a click before slicing.
 
-One thing worth trying: the tightest thing in the mark is a 0.460 mm gap
-between two separate shapes, and a 0.4 mm nozzle clears it by 0.06 mm — it
-works, but with very little to spare. The H2C ships with a 0.2 mm hotend, so
-if you want the mark as sharp as this model can render it, it is worth
-checking whether Bambu Studio will let you drive the two logo bodies with
-the 0.2 mm and the plate and post with the 0.4 mm. I have not verified that
-this combination is supported — confirm it before planning a batch around
-it, and do not try to print the whole 246 cm³ part through the 0.2 mm.
+The tightest thing in the mark is a 0.460 mm gap between two separate
+shapes, and a 0.4 mm nozzle clears it by 0.06 mm — it works, but with very
+little to spare. An obvious thought is to use the H2C's 0.2 mm hotend for
+the two logo bodies and the 0.4 mm for the plate and post, which would give
+those gaps better than twice the clearance they need.
+
+**This is not possible, and the machine says so itself.** Bambu Studio's
+Sync Nozzle dialog states plainly: *"Mixing nozzle diameters in one print is
+not supported. If the selected size is only on one extruder, single-extruder
+printing will be enforced."* Pick one diameter for the whole print.
+
+That dialog also settles which diameter, because it reports how many of each
+size the machine can reach on each extruder. On this printer, 0.2 mm is
+available on the right extruder only — selecting it would force
+single-extruder printing and **lose the multi-colour capability entirely**.
+0.4 mm is available on both, so it is the only size that both renders the
+mark and keeps the flush inlay possible.
 
 ### "The 3mf file has invalid config, load geometry data only"
 
@@ -261,14 +270,11 @@ the mark from 90 mm to 145 mm and cutting that growth to 0.05 mm fixed both
 ends at once: the strokes got thicker in absolute terms and the gaps got
 wider.
 
-**If your H2C will do it**, the best-quality option is to drive the two logo
-bodies with the 0.2 mm hotend and the plate and post with the 0.4 mm. At a
-0.22 mm line the 0.46 mm gaps get better than twice the clearance they need
-and the corners come out visibly sharper. I have not verified that Bambu
-Studio exposes per-object nozzle assignment on this machine — confirm it
-before planning around it. Printing the whole 246 cm³ part through a 0.2 mm
-nozzle is not the alternative; that is a multi-day print in a material that
-is prone to clogging at that diameter.
+A finer nozzle for the logo alone is not an option: Bambu Studio refuses to
+mix nozzle diameters within one print, and on this machine 0.2 mm exists on
+the right extruder only, so choosing it would force single-extruder printing
+and lose the flush inlay. 0.4 mm on both extruders is the configuration that
+works. See the note under *On a Bambu Lab H2C* above.
 
 ### The line up one side of the post
 
