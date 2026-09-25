@@ -193,7 +193,9 @@ considerably faster.
 | Bed | 70–80 °C | 70–80 °C | |
 | Part cooling | 30–50 % | 30–50 % | Full blast weakens PETG layer bonding. |
 | Outer wall speed | **25–30 mm/s** | 50 mm/s | The single biggest lever on visible surface quality, and where your unlimited time actually buys something. |
-| Seam position | **Scarf joint** | Scarf joint | Otherwise the seams stack into a visible line up one face of the post. This is the line you saw. |
+| Seam | **Scarf around entire wall** = on | same | *Not* a "Seam position" option — that dropdown only offers Nearest / Aligned / Back / Random. Scarf is the separate block of settings under it. This is the fix for the line up the post. |
+| Wall generator | **Arachne** | Arachne | Classic lays fixed-width beads, so a 0.46 mm channel gets one 0.40 mm line and a 0.06 mm void. Arachne varies the width to fill it exactly. |
+| X-Y contour / hole compensation | **0** | 0 | Leave alone. Any nonzero value eats directly into the 0.460 mm gaps. |
 | Ironing | **Off** | Off | See the warning below — on the flush set it drags black into the red. |
 | Supports | None | None | Nothing overhangs. The blade leans 10.9°, well inside what prints unsupported. |
 | Brim | None | None | PETG needs no help here, and removing a brim from a 215 mm perimeter is worse than the problem. |
@@ -271,10 +273,22 @@ is prone to clogging at that diameter.
 ### The line up one side of the post
 
 That is the seam, not the model — every perimeter loop has to start and stop
-somewhere, and by default Bambu Studio stacks them all at the same angle so
-they form a line. Set **Seam position** to **Scarf joint** and it all but
-disappears. There is only ever one seam per loop, which is why the far side
-is smooth.
+somewhere, and with **Seam position** set to *Aligned* Bambu Studio stacks
+them all at the same angle, so they form a line. There is only ever one seam
+per loop, which is why the far side is smooth.
+
+To fix it, do **not** look for a "Scarf joint" entry in the Seam position
+dropdown; there isn't one — it offers only Nearest, Aligned, Back and
+Random. Scarf is the separate block of checkboxes directly beneath it. Tick
+**Scarf around entire wall**. The stock preset ships with *Smart scarf seam
+application* already on, but "smart" only applies the scarf where the angle
+threshold (155° by default) is met, which on a post this straight means
+mostly nowhere. Forcing it around the entire wall ramps every loop's start
+and end into a taper instead of a blob, and the line all but disappears.
+
+Leaving Seam position on *Aligned* is then fine, and preferable — an aligned
+scarf is consistent all the way up, where *Random* scatters the taper and
+can read as noise on a large smooth flank.
 
 The ridge over the *top* of the post is a different thing and is meant to be
 there: it is the chisel-shaped lead-in, carried over from the stand this one
