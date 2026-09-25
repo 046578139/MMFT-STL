@@ -13,7 +13,7 @@ in front of it. Designed to print in a black body with the mark in red.
 | | |
 |---|---|
 | ![top](docs/images/2color_top.png) | ![three colour](docs/images/3color_hero.png) |
-| Two colours — black and red | Three colours — lettering red, firearms bone |
+| Two colours — black and red | Three colours — see note below on which way round |
 
 **215 × 98 × 70.6 mm.** No supports, no bridging, flat on the plate.
 
@@ -99,13 +99,13 @@ prints where one body is all you need.
 |---|---|---|
 | `raised/MMFT_Stand_black_body.stl` | black | 2- and 3-colour |
 | `raised/MMFT_Stand_red_logo_full.stl` | red | 2-colour |
-| `raised/MMFT_Stand_red_logo_text.stl` | red | 3-colour |
-| `raised/MMFT_Stand_light_logo_art.stl` | bone / silver / white | 3-colour |
+| `raised/MMFT_Stand_red_logo_text.stl` | the lettering | 3-colour |
+| `raised/MMFT_Stand_light_logo_art.stl` | the firearms | 3-colour |
 | `raised/MMFT_Stand_one_piece.stl` | any single colour | on its own |
 | `flush/MMFT_Stand_black_body.stl` | black | 2- and 3-colour |
 | `flush/MMFT_Stand_red_logo_full.stl` | red | 2-colour |
-| `flush/MMFT_Stand_red_logo_text.stl` | red | 3-colour |
-| `flush/MMFT_Stand_light_logo_art.stl` | bone / silver / white | 3-colour |
+| `flush/MMFT_Stand_red_logo_text.stl` | the lettering | 3-colour |
+| `flush/MMFT_Stand_light_logo_art.stl` | the firearms | 3-colour |
 | `flush/MMFT_Stand_engraved_one_piece.stl` | any single colour | on its own |
 
 Every part is modelled in the same coordinate space, so a multi-material

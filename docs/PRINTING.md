@@ -369,6 +369,22 @@ no overlap.
 For three colours use `MMFT_Stand_black_body.stl`,
 `MMFT_Stand_red_logo_text.stl` and `MMFT_Stand_light_logo_art.stl`.
 
+**Which way round the two accent colours go is your choice, and the file
+names are only the original suggestion.** The two bodies are just "the
+lettering" and "the firearms"; whichever filament slot you point each at is
+what it becomes.
+
+The scheme in use is **white lettering with red firearms** on black, and it
+is the better of the two. Red and black sit close together in luminance
+even though they read as clearly different colours up close, so red
+lettering on a black plate loses legibility at a distance. White against
+black is the highest contrast available here, which puts the words where
+they are readable across a room and leaves the red to work as an accent on
+the rifle, scope and pistol — where drawing the eye is the whole point.
+
+The file naming (`red_logo_text`, `light_logo_art`) predates that decision
+and is kept so existing links and instructions stay valid.
+
 Most of the filament a multi-material print wastes on this goes to purging
 between black and red, not into the part — the mark itself is only 1 cm³.
 Flushing into infill or into the object's own sparse regions cuts that down
@@ -398,7 +414,7 @@ heights.
 * **Cura** — Extensions → Post Processing → Modify G-Code → Filament Change,
   read the layer number off the preview at that Z.
 
-Three colours cannot be done this way. The red lettering and the light
+Three colours cannot be done this way. The lettering and the
 firearms sit in the same three layers, so that set needs a multi-material
 printer.
 
