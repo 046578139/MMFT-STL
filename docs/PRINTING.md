@@ -148,23 +148,46 @@ is maximum quality and print time does not matter. The **batch profile** is
 there for when you want a dozen of these and an overnight print each is too
 much.
 
-One constraint binds both, and it is not negotiable: **the layer height has
-to divide both 9.6 mm and 0.6 mm exactly.** 9.6 mm is the top of the plate,
-0.6 mm is the inlay, and if either lands mid-layer the slicer rounds it and
-the mark ends up shallower or deeper than the pocket it sits in. That admits
-0.30, 0.20, 0.15, 0.12 and 0.10 mm. It rules out 0.08 mm — the inlay comes
-to 7.5 layers — which is the one most people reach for when they want
-"finest".
+**On layer height, and a correction.** An earlier version of this document
+claimed the layer height *had* to divide both 9.6 mm (the top of the plate)
+and 0.6 mm (the inlay) exactly, and that 0.08 mm was therefore disqualified.
+That was wrong, and the reason it is wrong tells you which presets are
+actually safe: all of them.
+
+The plate and the inlay are separate bodies, and a slicer cuts every body on
+the *same* global Z planes. At any given layer, either the slice plane sits
+below 9.0 mm and the plate is solid there, or it sits between 9.0 and 9.6 and
+the inlay owns the logo region while the body's pocket excludes it. The two
+are complementary at every layer no matter where the boundaries fall, so
+**the inlay always fills its pocket exactly.** Divisibility changes the
+inlay's layer *count*, not the fit — and seven layers of colour is as opaque
+as five.
+
+What actually varies with layer height is the finish on the 2 mm round-over
+along the top edge of the plate, the one surface where the layers go nearly
+horizontal and stair-stepping shows:
+
+| Layer height | Round-over step | Step on the post's lean | Inlay layers |
+|---|---|---|---|
+| **0.08 mm** | **0.560 mm** | 0.015 mm | 7 |
+| 0.12 mm | 0.682 mm | 0.023 mm | 5 |
+| 0.16 mm | 0.784 mm | 0.031 mm | 4 |
+| 0.20 mm | 0.872 mm | 0.039 mm | 3 |
+
+The post's 10.9° lean is invisible at all of them. The round-over is where
+the difference goes. On a Bambu H2C that makes **0.08mm High Quality** the
+one to use here, with **0.12mm High Quality** giving most of the benefit
+considerably faster.
 
 | Setting | Display | Batch | Why |
 |---|---|---|---|
 | Nozzle | **0.4 mm** | 0.4 mm | Hard limit. See below — 0.6 mm cannot render this mark, and no amount of extra time fixes that. |
 | Line width | **0.40 mm** | 0.42 mm | The narrowest gap in the mark is 0.460 mm. Staying under it is the whole game. |
-| Layer height | **0.10 mm** | 0.20 mm | 96 layers to the top of the plate, 6 for the inlay. Both exact. |
-| First layer | 0.20 mm | 0.20 mm | Adhesion over a 215 mm footprint. Does not affect the heights above. |
+| Layer height | **0.08 mm** | 0.20 mm | Finest H2C preset — best finish on the plate's top round-over. |
+| First layer | 0.20 mm | 0.20 mm | Adhesion over a 215 mm footprint. |
 | Walls | **6** | 4 | The post carries its load entirely in the walls. Also the post's surface *is* its walls. |
-| Top solid | **1.2 mm** (12 layers) | 1.0 mm (5) | Specify it in millimetres, not layers. At 0.10 mm, "5 top layers" is only 0.5 mm and will pillow. |
-| Bottom solid | 0.8 mm (8 layers) | 0.8 mm (4) | |
+| Top solid | **1.2 mm** (15 layers) | 1.0 mm (5) | Specify it in millimetres, not layers. At 0.08 mm a preset's "5 top layers" is only 0.4 mm and will pillow over the infill. |
+| Bottom solid | 0.8 mm (10 layers) | 0.8 mm (4) | |
 | Infill | **25 %** gyroid | 25 % gyroid | Not structural and it does not help stability either — see below. 25 % is simply enough to hold the top surface flat. |
 | Nozzle temp | 240–250 °C | 240–250 °C | High end of the PETG range, for layer adhesion at the blade root. |
 | Bed | 70–80 °C | 70–80 °C | |
@@ -186,8 +209,9 @@ boundary — which is every edge of the mark. If you want ironing, it is only
 safe on the single-colour engraved version.
 
 **Where the extra time actually goes.** Of the settings above, the ones that
-change what you see are the layer height on the post's leaning curved flank
-and on the plate's 2 mm top round-over, and the outer wall speed everywhere.
+change what you see are the layer height on the plate's 2 mm top round-over — not on the post's
+lean, which is invisible at any of these — and the outer wall speed
+everywhere.
 Infill, walls beyond about four, and top layers beyond 1.2 mm cost hours and
 change nothing visible.
 

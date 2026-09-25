@@ -190,11 +190,17 @@ def statics() -> None:
 def main() -> None:
     feature_study()
     statics()
-    rule("Layer heights that keep 9.6 mm and 0.6 mm on boundaries")
-    for lh in (0.08, 0.10, 0.12, 0.15, 0.16, 0.20, 0.24, 0.25, 0.30):
-        ok = all(abs(v / lh - round(v / lh)) < 1e-9 for v in (BASE_H, B.LOGO_RELIEF))
-        print(f"  {lh:.2f} mm  {'OK ' if ok else 'no '} "
-              f"plate {BASE_H/lh:6.1f} layers, inlay {B.LOGO_RELIEF/lh:4.1f}")
+    # Layer height does NOT have to divide 9.6 and 0.6.  The plate and the
+    # inlay are separate bodies cut on the same global Z planes, so exactly
+    # one of them owns the logo region at every layer and the inlay always
+    # fills its pocket.  What varies is stair-stepping, and it only shows on
+    # the plate's top round-over, where the surface goes nearly horizontal.
+    rule("What layer height actually changes")
+    print(f"  {'layer':>6} {'round-over step':>17} {'lean step':>11} {'inlay layers':>13}")
+    for lh in (0.08, 0.12, 0.16, 0.20, 0.24):
+        round_step = np.sqrt(max(2 * B.BASE_TOP_ROUND * lh - lh * lh, 0.0))
+        print(f"  {lh:6.2f} {round_step:16.3f}mm {lh*np.tan(LEAN):10.4f}mm "
+              f"{B.LOGO_RELIEF/lh:13.2f}")
 
 
 if __name__ == "__main__":
